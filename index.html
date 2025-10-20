@@ -144,6 +144,9 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Simpan Ringkasan
                         </button>
+                        <button type="button" class="btn btn-success" id="btnDownloadMD">
+                            <i class="fas fa-download"></i> Unduh .md
+                        </button>
                     </div>
                 </form>
             </div>
@@ -181,6 +184,10 @@
                     <div class="export-card" id="exportCSV">
                         <i class="fas fa-file-csv"></i>
                         <h3>Ekspor CSV</h3>
+                    </div>
+                    <div class="export-card" id="exportAllMD">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Ekspor Semua .md</h3>
                     </div>
                 </div>
                 <div class="backup-section">
@@ -377,6 +384,7 @@
                     // Form
                     document.getElementById('summaryForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
                     document.getElementById('btnReset').addEventListener('click', () => this.resetForm());
+                    document.getElementById('btnDownloadMD').addEventListener('click', () => this.downloadCurrentAsMD());
 
                     // Master Data
                     document.getElementById('addCourseBtn').addEventListener('click', () => this.addCourse());
@@ -390,6 +398,7 @@
                     document.getElementById('priorityFilter').addEventListener('change', () => this.filterSummaries());
                     document.getElementById('exportJSON').addEventListener('click', () => this.exportJSON());
                     document.getElementById('exportCSV').addEventListener('click', () => this.exportCSV());
+                    document.getElementById('exportAllMD').addEventListener('click', () => this.exportAllAsMD());
                     document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
                     document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
                     document.getElementById('clearAllData').addEventListener('click', () => this.clearAllData());
@@ -532,6 +541,10 @@
 
                     this.saveSummaries();
                     this.displaySummaries();
+                    
+                    // Automatically download as .md file after saving
+                    this.downloadSummaryAsMD(summaryData);
+                    
                     this.resetForm();
                     this.showToast(this.currentEditingId ? 'Ringkasan berhasil diperbarui!' : 'Ringkasan berhasil disimpan!', 'success');
                 }
@@ -549,6 +562,120 @@
                     }
                     
                     this.updateCharCount();
+                }
+
+                // Generate Markdown content from summary data
+                generateMarkdownContent(summary) {
+                    const date = new Date(summary.meetingDate).toLocaleDateString('id-ID');
+                    
+                    let markdown = `# ${summary.courseName} - Pertemuan ${summary.meetingNumber}\n\n`;
+                    markdown += `**Topik:** ${summary.topic}\n\n`;
+                    markdown += `**Tanggal:** ${date}\n\n`;
+                    markdown += `**Dosen:** ${summary.lecturer}\n\n`;
+                    markdown += `**Prioritas:** ${this.getPriorityLabel(summary.priority)}\n\n`;
+                    
+                    if (summary.tags) {
+                        markdown += `**Tags:** ${summary.tags}\n\n`;
+                    }
+                    
+                    markdown += `---\n\n`;
+                    markdown += `${summary.summary}\n\n`;
+                    markdown += `---\n\n`;
+                    markdown += `*Dibuat pada: ${new Date(summary.createdAt).toLocaleString('id-ID')}*\n`;
+                    markdown += `*Terakhir diupdate: ${new Date(summary.updatedAt).toLocaleString('id-ID')}*\n`;
+                    
+                    return markdown;
+                }
+
+                // Download current form as .md file
+                downloadCurrentAsMD() {
+                    const topic = document.getElementById('topic').value.trim();
+                    if (!topic) {
+                        this.showToast('Harap isi topik pembahasan terlebih dahulu!', 'warning');
+                        return;
+                    }
+                    
+                    // Get Summernote content if available
+                    let summaryContent = '';
+                    if ($('#summary').summernote('code')) {
+                        summaryContent = $('#summary').summernote('code');
+                    } else {
+                        summaryContent = document.getElementById('summary').value;
+                    }
+                    
+                    if (!summaryContent.trim()) {
+                        this.showToast('Harap isi ringkasan materi terlebih dahulu!', 'warning');
+                        return;
+                    }
+                    
+                    const tempSummary = {
+                        courseName: document.getElementById('courseName').value || 'Mata Kuliah',
+                        meetingNumber: parseInt(document.getElementById('meetingNumber').value) || 1,
+                        meetingDate: document.getElementById('meetingDate').value || new Date().toISOString().split('T')[0],
+                        lecturer: document.getElementById('lecturer').value || 'Dosen',
+                        topic: topic,
+                        summary: summaryContent,
+                        tags: document.getElementById('tags').value || '',
+                        priority: document.getElementById('priority').value || 'medium',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    this.downloadSummaryAsMD(tempSummary);
+                }
+
+                // Download single summary as .md file
+                downloadSummaryAsMD(summary) {
+                    const markdownContent = this.generateMarkdownContent(summary);
+                    const filename = this.generateFilename(summary.topic) + '.md';
+                    
+                    const blob = new Blob([markdownContent], { type: 'text/markdown' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    this.showToast(`File ${filename} berhasil diunduh!`, 'success');
+                }
+
+                // Generate filename from topic
+                generateFilename(topic) {
+                    // Remove special characters and replace spaces with underscores
+                    return topic
+                        .toLowerCase()
+                        .replace(/[^a-z0-9\s]/g, '')
+                        .replace(/\s+/g, '_')
+                        .substring(0, 50); // Limit filename length
+                }
+
+                // Export all summaries as .md files in a zip
+                exportAllAsMD() {
+                    if (this.summaries.length === 0) {
+                        this.showToast('Tidak ada ringkasan untuk diekspor!', 'warning');
+                        return;
+                    }
+                    
+                    // Create a zip file containing all .md files
+                    const zip = new JSZip();
+                    
+                    this.summaries.forEach(summary => {
+                        const markdownContent = this.generateMarkdownContent(summary);
+                        const filename = this.generateFilename(summary.topic) + '.md';
+                        zip.file(filename, markdownContent);
+                    });
+                    
+                    zip.generateAsync({ type: 'blob' }).then(content => {
+                        const url = URL.createObjectURL(content);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `ringkasan-perkuliahan-${new Date().toISOString().slice(0, 10)}.zip`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        
+                        this.showToast(`Semua ringkasan berhasil diekspor!`, 'success');
+                    });
                 }
 
                 editSummary(id) {
@@ -622,6 +749,7 @@
                             <div class="tags">${s.tags ? s.tags.split(',').map(t => `<span class="tag">${this.escapeHtml(t.trim())}</span>`).join('') : ''}</div>
                             <div class="summary-actions">
                                 <button class="btn btn-primary" onclick="app.editSummary('${s.id}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-success" onclick="app.downloadSummaryAsMD(app.summaries.find(s => s.id === '${s.id}'))"><i class="fas fa-download"></i> .md</button>
                                 <button class="btn btn-danger" onclick="app.deleteSummary('${s.id}')"><i class="fas fa-trash"></i> Hapus</button>
                             </div>
                         </div>
@@ -677,6 +805,9 @@
                                 </div>
                                 <div class="summary-content"><strong>Topik:</strong> ${this.escapeHtml(s.topic)}</div>
                                 <div class="tags">${s.tags ? s.tags.split(',').map(t => `<span class="tag">${this.escapeHtml(t.trim())}</span>`).join('') : ''}</div>
+                                <div class="summary-actions">
+                                    <button class="btn btn-success" onclick="app.downloadSummaryAsMD(app.summaries.find(sum => sum.id === '${s.id}'))"><i class="fas fa-download"></i> .md</button>
+                                </div>
                             </div>
                         `).join('');
                     }
@@ -790,5 +921,8 @@
             app.renderCourseList();
             app.renderLecturerList();
         </script>
+
+        <!-- JSZip untuk kompresi file -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
