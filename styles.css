@@ -610,6 +610,399 @@
             }
         }
 
+        .json-data-container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .json-data-container h3 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        #json-data {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+            max-height: 400px;
+            overflow: auto;
+            font-family: monospace;
+            white-space: pre;
+            margin-bottom: 20px;
+        }
+
+        #data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #data-table th,
+        #data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #data-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        #data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Data JSON Tab Specific Styles */
+        .json-controls {
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .json-controls button {
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .json-controls button:hover {
+            background-color: #2980b9;
+        }
+
+        .json-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            background: white;
+            padding: 0 10px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .json-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            background-color: #eee;
+            transition: all 0.3s;
+        }
+        
+        .json-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .json-tab-content {
+            display: none;
+        }
+        
+        .json-tab-content.active {
+            display: block;
+        }
+
+        .json-form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        
+        .json-form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .json-form-table td {
+            padding: 10px;
+            vertical-align: top;
+        }
+        
+        .json-form-table label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .json-form-table input, 
+        .json-form-table select, 
+        .json-form-table textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .json-form-actions {
+            margin-top: 15px;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .json-form-actions button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .json-form-actions button.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .json-form-actions button.secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .json-form-actions button.danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .json-form-actions button:hover {
+            opacity: 0.9;
+        }
+
+        .json-action-btn {
+            padding: 6px 12px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .json-action-btn.edit {
+            background: var(--primary-color);
+        }
+        
+        .json-action-btn.delete {
+            background: var(--danger-color);
+        }
+
+        /* Data table styling within the JSON tab */
+        .json-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .json-data-table th, 
+        .json-data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .json-data-table th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .json-data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .json-data-table tr:hover {
+            background-color: #f1f7fd;
+        }
+
+        .json-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+            max-height: 400px;
+            overflow: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+            background-color: #f5f5f5;
+        }
+
+        /* Reading View Styles */
+        .reading-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .reading-view.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .reading-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .reading-view.active .reading-content {
+            transform: scale(1);
+        }
+        
+        .reading-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .reading-title {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin: 0 0 10px 0;
+        }
+        
+        .reading-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+        
+        .reading-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .reading-body {
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .reading-body h1, 
+        .reading-body h2, 
+        .reading-body h3 {
+            color: var(--secondary-color);
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+        
+        .reading-body p {
+            margin-bottom: 1em;
+        }
+        
+        .reading-body ul, 
+        .reading-body ol {
+            margin: 1em 0;
+            padding-left: 1.5em;
+        }
+        
+        .reading-body li {
+            margin-bottom: 0.5em;
+        }
+        
+        .reading-tags {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .reading-tag {
+            background: #e8f4fd;
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .reading-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+        
+        .reading-actions {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .reading-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .reading-btn-edit {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .reading-btn-download {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .reading-btn-share {
+            background: #9b59b6;
+            color: white;
+        }
+
         @media (max-width: 576px) {
             .dashboard-stats {
                 grid-template-columns: 1fr;
@@ -621,5 +1014,32 @@
             
             .form-actions {
                 flex-direction: column;
+            }
+            
+            .json-tabs {
+                flex-direction: column;
+            }
+            
+            .json-tab {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .json-form-actions {
+                flex-direction: column;
+            }
+            
+            .reading-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .reading-header {
+                text-align: center;
+            }
+            
+            .reading-meta {
+                justify-content: center;
             }
         }
