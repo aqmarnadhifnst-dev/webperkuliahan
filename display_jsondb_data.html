@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display JSON Database Data</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            background: white;
+            padding: 0 10px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            background-color: #eee;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f7fd;
+        }
+
+        .json-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+            max-height: 400px;
+            overflow: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-edit {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+        
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .form-table td {
+            padding: 10px;
+            vertical-align: top;
+        }
+        
+        .form-table label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .form-table input, 
+        .form-table select, 
+        .form-table textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-table input:focus,
+        .form-table select:focus,
+        .form-table textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .form-actions {
+            margin-top: 15px;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .form-actions .btn {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-database"></i> Database JSON - Smart Lecture Notes</h1>
+        
+        <div class="controls">
+            <button id="loadDataBtn" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Muat Data</button>
+            <button id="exportJsonBtn" class="btn btn-success"><i class="fas fa-file-export"></i> Ekspor JSON</button>
+            <button id="resetDataBtn" class="btn btn-danger"><i class="fas fa-redo"></i> Reset Data</button>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="summary">Ringkasan</div>
+            <div class="tab" data-tab="course">Mata Kuliah</div>
+            <div class="tab" data-tab="lecturer">Dosen</div>
+            <div class="tab" data-tab="json">JSON Mentah</div>
+        </div>
+
+        <div class="tab-content active" id="summary-tab">
+            <h2>Tambah Ringkasan Baru</h2>
+            <div class="form-container">
+                <input type="hidden" id="edit-summary-id">
+                <table class="form-table">
+                    <tr>
+                        <td><label for="summary-id">ID:</label></td>
+                        <td><input type="text" id="summary-id" placeholder="ID otomatis jika kosong"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-course">Mata Kuliah:</label></td>
+                        <td><input type="text" id="summary-course" placeholder="Nama mata kuliah"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-meeting">Pertemuan Ke-:</label></td>
+                        <td><input type="number" id="summary-meeting" min="1"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-date">Tanggal:</label></td>
+                        <td><input type="date" id="summary-date"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-lecturer">Dosen:</label></td>                        
+                        <td>
+                            <select id="summary-lecturer">
+                                <option value="">Pilih Dosen</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-topic">Topik:</label></td>
+                        <td><input type="text" id="summary-topic" placeholder="Topik pembahasan"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-content">Ringkasan:</label></td>
+                        <td><textarea id="summary-content" placeholder="Ringkasan materi" rows="8"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-tags">Tags:</label></td>
+                        <td><input type="text" id="summary-tags" placeholder="Tag/kategori (pisahkan dengan koma)"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="summary-priority">Prioritas:</label></td>
+                        <td>
+                            <select id="summary-priority">
+                                <option value="low">Rendah</option>
+                                <option value="medium" selected>Sedang</option>
+                                <option value="high">Tinggi</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <div class="form-actions">
+                    <button id="addSummaryBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Ringkasan</button>
+                    <button id="updateSummaryBtn" class="btn btn-primary hidden"><i class="fas fa-sync-alt"></i> Update Ringkasan</button>
+                    <button id="cancelEditSummaryBtn" class="btn btn-danger hidden"><i class="fas fa-times"></i> Batal</button>
+                </div>
+            </div>
+            
+            <h2>Daftar Ringkasan Materi</h2>
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mata Kuliah</th>
+                        <th>Pertemuan</th>
+                        <th>Dosen</th>
+                        <th>Topik</th>
+                        <th>Ringkasan</th>
+                        <th>Prioritas</th>
+                        <th>Dibuat</th>
+                        <th>Diupdate</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="course-tab">
+            <h2>Tambah Mata Kuliah Baru</h2>
+            <div class="form-container">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="new-course-name" placeholder="Nama mata kuliah baru" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button id="addCourseBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah</button>
+                </div>
+            </div>
+            
+            <h2>Daftar Mata Kuliah</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Mata Kuliah</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="course-tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="lecturer-tab">
+            <h2>Tambah Dosen Baru</h2>
+            <div class="form-container">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="new-lecturer-name" placeholder="Nama dosen baru" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button id="addLecturerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah</button>
+                </div>
+            </div>
+            
+            <h2>Daftar Dosen</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Dosen</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="lecturer-tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="json-tab">
+            <h2>Data JSON Mentah</h2>
+            <div id="json-display" class="json-display">Data belum dimuat...</div>
+        </div>
+    </div>
+
+    <!-- Font Awesome untuk ikon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <!-- jQuery dan Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    
+    <!-- Summernote JS dan CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/lang/summernote-id-ID.min.js"></script>
+    
+    <!-- Sistem database JSON -->
+    <script src="jsondb.js"></script>
+    
+    <script>
+        // Menyimpan data yang dimuat
+        let currentData = null;
+
+        // Fungsi untuk memuat data dari jsonDB
+        async function loadData() {
+            try {
+                currentData = await jsonDB.loadData();
+                await displayAllData();
+                document.getElementById('json-display').textContent = JSON.stringify(currentData, null, 2);
+                alert('Data berhasil dimuat dari jsonDB!');
+            } catch (error) {
+                console.error('Error memuat data:', error);
+                alert('Error memuat data: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk menampilkan semua data
+        async function displayAllData() {
+            if (!currentData) return;
+            
+            // Tampilkan ringkasan
+            displaySummaries();
+            
+            // Tampilkan mata kuliah
+            displayCourses();
+            
+            // Tampilkan dosen
+            displayLecturers();
+            
+            // Isi dropdown dosen di formulir ringkasan
+            await populateLecturerDropdown();
+        }
+        
+        // Fungsi untuk mengisi dropdown dosen
+        async function populateLecturerDropdown() {
+            const lecturerSelect = document.getElementById('summary-lecturer');
+            lecturerSelect.innerHTML = '<option value="">Pilih Dosen</option>';
+            
+            if (!currentData || !currentData.lecturers) return;
+            
+            currentData.lecturers.forEach(lecturer => {
+                const option = document.createElement('option');
+                option.value = lecturer;
+                option.textContent = lecturer;
+                lecturerSelect.appendChild(option);
+            });
+        }
+
+        // Fungsi untuk menampilkan ringkasan
+        function displaySummaries() {
+            const tbody = document.getElementById('summary-tbody');
+            tbody.innerHTML = '';
+            
+            if (!currentData || !currentData.summaries) return;
+            
+            currentData.summaries.forEach(summary => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = summary.id;
+                row.insertCell(1).textContent = summary.courseName || '';
+                row.insertCell(2).textContent = summary.meetingNumber || '';
+                row.insertCell(3).textContent = summary.lecturer || '';
+                row.insertCell(4).textContent = summary.topic || '';
+                row.insertCell(5).textContent = summary.summary ? 
+                    (stripHtmlTags(summary.summary).length > 50 ? stripHtmlTags(summary.summary).substring(0, 50) + '...' : stripHtmlTags(summary.summary)) : '';
+                row.insertCell(6).textContent = summary.priority || '';
+                row.insertCell(7).textContent = new Date(summary.createdAt).toLocaleDateString('id-ID') || '';
+                row.insertCell(8).textContent = new Date(summary.updatedAt).toLocaleDateString('id-ID') || '';
+                
+                // Tambahkan kolom aksi
+                const actionCell = row.insertCell(9);
+                actionCell.innerHTML = `
+                    <button class="btn btn-edit btn-sm" onclick="handleEditSummary(${JSON.stringify(summary).replace(/"/g, '&quot;')})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSummary('${summary.id}')"><i class="fas fa-trash"></i> Hapus</button>
+                `;
+            });
+        }
+
+        // Fungsi untuk menampilkan mata kuliah
+        function displayCourses() {
+            const tbody = document.getElementById('course-tbody');
+            tbody.innerHTML = '';
+            
+            if (!currentData || !currentData.courses) return;
+            
+            currentData.courses.forEach((course, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = index + 1;
+                row.insertCell(1).textContent = course;
+                
+                // Tambahkan kolom aksi
+                const actionCell = row.insertCell(2);
+                actionCell.innerHTML = `
+                    <button class="btn btn-danger btn-sm" onclick="deleteCourse('${course.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
+                `;
+            });
+        }
+
+        // Fungsi untuk menampilkan dosen
+        function displayLecturers() {
+            const tbody = document.getElementById('lecturer-tbody');
+            tbody.innerHTML = '';
+            
+            if (!currentData || !currentData.lecturers) return;
+            
+            currentData.lecturers.forEach((lecturer, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = index + 1;
+                row.insertCell(1).textContent = lecturer;
+                
+                // Tambahkan kolom aksi
+                const actionCell = row.insertCell(2);
+                actionCell.innerHTML = `
+                    <button class="btn btn-danger btn-sm" onclick="deleteLecturer('${lecturer.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
+                `;
+            });
+        }
+
+        // Fungsi untuk ekspor JSON
+        function exportToJson() {
+            if (!currentData) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+            
+            jsonDB.exportToFile();
+        }
+
+        // Fungsi untuk reset data
+        async function resetData() {
+            if (confirm('Apakah Anda yakin ingin mereset semua data?')) {
+                await jsonDB.resetData();
+                currentData = await jsonDB.loadData();
+                displayAllData();
+                document.getElementById('json-display').textContent = JSON.stringify(currentData, null, 2);
+                alert('Data telah direset!');
+            }
+        }
+
+        // Event listeners untuk tab
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Hapus kelas active dari semua tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Tambahkan kelas active ke tab yang diklik
+                tab.classList.add('active');
+                
+                // Tampilkan konten tab yang sesuai
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Event listeners untuk tombol
+        document.getElementById('loadDataBtn').addEventListener('click', loadData);
+        document.getElementById('exportJsonBtn').addEventListener('click', exportToJson);
+        document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+        // Fungsi untuk menambah ringkasan baru
+        async function addSummary() {
+            const id = document.getElementById('summary-id').value || Date.now().toString();
+            const course = document.getElementById('summary-course').value;
+            const meeting = document.getElementById('summary-meeting').value;
+            const date = document.getElementById('summary-date').value;
+            const lecturer = document.getElementById('summary-lecturer').value;
+            const topic = document.getElementById('summary-topic').value;
+            const content = document.getElementById('summary-content').value;
+            const tags = document.getElementById('summary-tags').value;
+            const priority = document.getElementById('summary-priority').value;
+            
+            if (!course || !meeting || !date || !lecturer || !topic || !content) {
+                alert('Mohon lengkapi semua field yang wajib!');
+                return;
+            }
+            
+            const newSummary = {
+                id: id,
+                courseName: course,
+                meetingNumber: parseInt(meeting),
+                meetingDate: date,
+                lecturer: lecturer,
+                topic: topic,
+                summary: content,
+                tags: tags,
+                priority: priority,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                await jsonDB.addSummary(newSummary);
+                await loadData(); // Muat ulang data
+                await resetSummaryForm();
+                alert('Ringkasan berhasil ditambahkan!');
+            } catch (error) {
+                console.error('Error menambah ringkasan:', error);
+                alert('Error menambah ringkasan: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk menambah mata kuliah baru
+        async function addCourse() {
+            const courseName = document.getElementById('new-course-name').value.trim();
+            
+            if (!courseName) {
+                alert('Nama mata kuliah tidak boleh kosong!');
+                return;
+            }
+            
+            try {
+                const result = await jsonDB.addCourse(courseName);
+                if (result) {
+                    await loadData(); // Muat ulang data
+                    document.getElementById('new-course-name').value = '';
+                    alert('Mata kuliah berhasil ditambahkan!');
+                } else {
+                    alert('Mata kuliah sudah ada!');
+                }
+            } catch (error) {
+                console.error('Error menambah mata kuliah:', error);
+                alert('Error menambah mata kuliah: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk menambah dosen baru
+        async function addLecturer() {
+            const lecturerName = document.getElementById('new-lecturer-name').value.trim();
+            
+            if (!lecturerName) {
+                alert('Nama dosen tidak boleh kosong!');
+                return;
+            }
+            
+            try {
+                const result = await jsonDB.addLecturer(lecturerName);
+                if (result) {
+                    await loadData(); // Muat ulang data
+                    document.getElementById('new-lecturer-name').value = '';
+                    alert('Dosen berhasil ditambahkan!');
+                } else {
+                    alert('Dosen sudah ada!');
+                }
+            } catch (error) {
+                console.error('Error menambah dosen:', error);
+                alert('Error menambah dosen: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk menghapus ringkasan
+        async function deleteSummary(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus ringkasan ini?')) {
+                try {
+                    await jsonDB.deleteSummary(id);
+                    await loadData(); // Muat ulang data
+                    alert('Ringkasan berhasil dihapus!');
+                } catch (error) {
+                    console.error('Error menghapus ringkasan:', error);
+                    alert('Error menghapus ringkasan: ' + error.message);
+                }
+            }
+        }
+
+        // Fungsi untuk menghapus mata kuliah
+        async function deleteCourse(courseName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus mata kuliah "${courseName}"?`)) {
+                try {
+                    await jsonDB.deleteCourse(courseName);
+                    await loadData(); // Muat ulang data
+                    alert('Mata kuliah berhasil dihapus!');
+                } catch (error) {
+                    console.error('Error menghapus mata kuliah:', error);
+                    alert('Error menghapus mata kuliah: ' + error.message);
+                }
+            }
+        }
+
+        // Fungsi untuk menghapus dosen
+        async function deleteLecturer(lecturerName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus dosen "${lecturerName}"?`)) {
+                try {
+                    await jsonDB.deleteLecturer(lecturerName);
+                    await loadData(); // Muat ulang data
+                    alert('Dosen berhasil dihapus!');
+                } catch (error) {
+                    console.error('Error menghapus dosen:', error);
+                    alert('Error menghapus dosen: ' + error.message);
+                }
+            }
+        }
+
+        // Fungsi untuk mengedit ringkasan
+        function editSummary(summary) {
+            document.getElementById('edit-summary-id').value = summary.id;
+            document.getElementById('summary-id').value = summary.id;
+            document.getElementById('summary-course').value = summary.courseName;
+            document.getElementById('summary-meeting').value = summary.meetingNumber;
+            document.getElementById('summary-date').value = summary.meetingDate;
+            document.getElementById('summary-lecturer').value = summary.lecturer;
+            document.getElementById('summary-topic').value = summary.topic;
+            document.getElementById('summary-content').value = summary.summary;
+            document.getElementById('summary-tags').value = summary.tags || '';
+            document.getElementById('summary-priority').value = summary.priority;
+            
+            // Tampilkan tombol update dan sembunyikan tombol add
+            document.getElementById('addSummaryBtn').classList.add('hidden');
+            document.getElementById('updateSummaryBtn').classList.remove('hidden');
+            document.getElementById('cancelEditSummaryBtn').classList.remove('hidden');
+            
+            // Scroll ke formulir
+            document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Fungsi untuk menangani edit ringkasan (async wrapper)
+        async function handleEditSummary(summary) {
+            // Pastikan dropdown dosen terisi
+            await populateLecturerDropdown();
+            editSummary(summary);
+        }
+
+        // Fungsi untuk memperbarui ringkasan
+        async function updateSummary() {
+            const id = document.getElementById('edit-summary-id').value;
+            const course = document.getElementById('summary-course').value;
+            const meeting = document.getElementById('summary-meeting').value;
+            const date = document.getElementById('summary-date').value;
+            const lecturer = document.getElementById('summary-lecturer').value;
+            const topic = document.getElementById('summary-topic').value;
+            const content = document.getElementById('summary-content').value;
+            const tags = document.getElementById('summary-tags').value;
+            const priority = document.getElementById('summary-priority').value;
+            
+            if (!id || !course || !meeting || !date || !lecturer || !topic || !content) {
+                alert('Mohon lengkapi semua field yang wajib!');
+                return;
+            }
+            
+            const updatedSummary = {
+                id: id,
+                courseName: course,
+                meetingNumber: parseInt(meeting),
+                meetingDate: date,
+                lecturer: lecturer,
+                topic: topic,
+                summary: content,
+                tags: tags,
+                priority: priority,
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                await jsonDB.updateSummary(id, updatedSummary);
+                await loadData(); // Muat ulang data
+                await resetSummaryForm();
+                alert('Ringkasan berhasil diperbarui!');
+            } catch (error) {
+                console.error('Error memperbarui ringkasan:', error);
+                alert('Error memperbarui ringkasan: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk membatalkan edit ringkasan
+        async function cancelEditSummary() {
+            await resetSummaryForm();
+        }
+
+        // Fungsi untuk mereset formulir ringkasan
+        async function resetSummaryForm() {
+            document.getElementById('edit-summary-id').value = '';
+            document.getElementById('summary-id').value = '';
+            document.getElementById('summary-course').value = '';
+            document.getElementById('summary-meeting').value = '';
+            document.getElementById('summary-date').value = '';
+            document.getElementById('summary-lecturer').value = '';
+            document.getElementById('summary-topic').value = '';
+            document.getElementById('summary-content').value = '';
+            document.getElementById('summary-tags').value = '';
+            document.getElementById('summary-priority').value = 'medium';
+            
+            // Kembalikan tombol ke keadaan awal
+            document.getElementById('addSummaryBtn').classList.remove('hidden');
+            document.getElementById('updateSummaryBtn').classList.add('hidden');
+            document.getElementById('cancelEditSummaryBtn').classList.add('hidden');
+            
+            // Perbarui dropdown dosen
+            await populateLecturerDropdown();
+        }
+
+        // Event listeners untuk formulir dan tombol CRUD
+        document.getElementById('addSummaryBtn').addEventListener('click', addSummary);
+        document.getElementById('updateSummaryBtn').addEventListener('click', updateSummary);
+        document.getElementById('cancelEditSummaryBtn').addEventListener('click', cancelEditSummary);
+        document.getElementById('addCourseBtn').addEventListener('click', addCourse);
+        document.getElementById('addLecturerBtn').addEventListener('click', addLecturer);
+
+        // Fungsi untuk menginisialisasi Summernote
+        function initSummernote() {
+            if ($('#summary-content').length) {
+                $('#summary-content').summernote({
+                    placeholder: 'Tulis ringkasan materi...',
+                    tabsize: 2,
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    focus: true,
+                    lang: 'id-ID',
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['fullscreen', 'codeview']]
+                    ]
+                });
+            }
+        }
+
+        // Fungsi untuk mendapatkan konten Summernote
+        function getSummernoteContent() {
+            if ($('#summary-content').summernote('code')) {
+                return $('#summary-content').summernote('code');
+            } else {
+                return document.getElementById('summary-content').value;
+            }
+        }
+
+        // Fungsi untuk mengatur konten Summernote
+        function setSummernoteContent(content) {
+            if ($('#summary-content').summernote('code')) {
+                $('#summary-content').summernote('code', content);
+            } else {
+                document.getElementById('summary-content').value = content;
+            }
+        }
+
+        // Muat data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentData = await jsonDB.loadData();
+            await displayAllData();
+            document.getElementById('json-display').textContent = JSON.stringify(currentData, null, 2);
+            
+            // Inisialisasi Summernote
+            initSummernote();
+        });
+        
+        // Fungsi untuk menambah ringkasan baru (diperbarui untuk menggunakan Summernote)
+        async function addSummary() {
+            const id = document.getElementById('summary-id').value || Date.now().toString();
+            const course = document.getElementById('summary-course').value;
+            const meeting = document.getElementById('summary-meeting').value;
+            const date = document.getElementById('summary-date').value;
+            const lecturer = document.getElementById('summary-lecturer').value;
+            const topic = document.getElementById('summary-topic').value;
+            const content = getSummernoteContent(); // Gunakan Summernote
+            const tags = document.getElementById('summary-tags').value;
+            const priority = document.getElementById('summary-priority').value;
+            
+            if (!course || !meeting || !date || !lecturer || !topic || !content) {
+                alert('Mohon lengkapi semua field yang wajib!');
+                return;
+            }
+            
+            const newSummary = {
+                id: id,
+                courseName: course,
+                meetingNumber: parseInt(meeting),
+                meetingDate: date,
+                lecturer: lecturer,
+                topic: topic,
+                summary: content,
+                tags: tags,
+                priority: priority,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                await jsonDB.addSummary(newSummary);
+                await loadData(); // Muat ulang data
+                await resetSummaryForm();
+                alert('Ringkasan berhasil ditambahkan!');
+            } catch (error) {
+                console.error('Error menambah ringkasan:', error);
+                alert('Error menambah ringkasan: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk memperbarui ringkasan (diperbarui untuk menggunakan Summernote)
+        async function updateSummary() {
+            const id = document.getElementById('edit-summary-id').value;
+            const course = document.getElementById('summary-course').value;
+            const meeting = document.getElementById('summary-meeting').value;
+            const date = document.getElementById('summary-date').value;
+            const lecturer = document.getElementById('summary-lecturer').value;
+            const topic = document.getElementById('summary-topic').value;
+            const content = getSummernoteContent(); // Gunakan Summernote
+            const tags = document.getElementById('summary-tags').value;
+            const priority = document.getElementById('summary-priority').value;
+            
+            if (!id || !course || !meeting || !date || !lecturer || !topic || !content) {
+                alert('Mohon lengkapi semua field yang wajib!');
+                return;
+            }
+            
+            const updatedSummary = {
+                id: id,
+                courseName: course,
+                meetingNumber: parseInt(meeting),
+                meetingDate: date,
+                lecturer: lecturer,
+                topic: topic,
+                summary: content,
+                tags: tags,
+                priority: priority,
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                await jsonDB.updateSummary(id, updatedSummary);
+                await loadData(); // Muat ulang data
+                await resetSummaryForm();
+                alert('Ringkasan berhasil diperbarui!');
+            } catch (error) {
+                console.error('Error memperbarui ringkasan:', error);
+                alert('Error memperbarui ringkasan: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk mengedit ringkasan (diperbarui untuk menggunakan Summernote)
+        function editSummary(summary) {
+            document.getElementById('edit-summary-id').value = summary.id;
+            document.getElementById('summary-id').value = summary.id;
+            document.getElementById('summary-course').value = summary.courseName;
+            document.getElementById('summary-meeting').value = summary.meetingNumber;
+            document.getElementById('summary-date').value = summary.meetingDate;
+            document.getElementById('summary-lecturer').value = summary.lecturer;
+            document.getElementById('summary-topic').value = summary.topic;
+            setSummernoteContent(summary.summary); // Gunakan Summernote
+            document.getElementById('summary-tags').value = summary.tags || '';
+            document.getElementById('summary-priority').value = summary.priority;
+            
+            // Tampilkan tombol update dan sembunyikan tombol add
+            document.getElementById('addSummaryBtn').classList.add('hidden');
+            document.getElementById('updateSummaryBtn').classList.remove('hidden');
+            document.getElementById('cancelEditSummaryBtn').classList.remove('hidden');
+            
+            // Scroll ke formulir
+            document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fungsi untuk menghapus tag HTML
+        function stripHtmlTags(html) {
+            const temporalDivElement = document.createElement('div');
+            temporalDivElement.innerHTML = html;
+            return temporalDivElement.textContent || temporalDivElement.innerText || '';
+        }
+        
+        // Fungsi untuk mereset formulir ringkasan (diperbarui untuk menggunakan Summernote)
+        async function resetSummaryForm() {
+            document.getElementById('edit-summary-id').value = '';
+            document.getElementById('summary-id').value = '';
+            document.getElementById('summary-course').value = '';
+            document.getElementById('summary-meeting').value = '';
+            document.getElementById('summary-date').value = '';
+            document.getElementById('summary-lecturer').value = '';
+            document.getElementById('summary-topic').value = '';
+            setSummernoteContent(''); // Reset Summernote
+            document.getElementById('summary-tags').value = '';
+            document.getElementById('summary-priority').value = 'medium';
+            
+            // Kembalikan tombol ke keadaan awal
+            document.getElementById('addSummaryBtn').classList.remove('hidden');
+            document.getElementById('updateSummaryBtn').classList.add('hidden');
+            document.getElementById('cancelEditSummaryBtn').classList.add('hidden');
+            
+            // Perbarui dropdown dosen
+            await populateLecturerDropdown();
+        }
+        
+        // Fungsi untuk menghapus tag HTML
+        function stripHtmlTags(html) {
+            const temporalDivElement = document.createElement('div');
+            temporalDivElement.innerHTML = html;
+            return temporalDivElement.textContent || temporalDivElement.innerText || '';
+        }
+    </script>
+</body>
+</html>
