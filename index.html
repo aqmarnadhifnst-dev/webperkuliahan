@@ -3,1605 +3,799 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Lecture Notes - Ringkasan Perkuliahan</title>
+    <title>Kumpulan Materi - Smart Lecture Notes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
-    <link rel="stylesheet" href="styles.css">
-    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .material-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            padding: 20px;
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meeting-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topic {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .summary-content {
+            flex-grow: 1;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #e8f4fd;
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .priority-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        .priority-badge.high {
+            background: #ffeaea;
+            color: var(--danger-color);
+        }
+
+        .priority-badge.medium {
+            background: #fff4e5;
+            color: var(--warning-color);
+        }
+
+        .priority-badge.low {
+            background: #e8f4fd;
+            color: var(--primary-color);
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .read-btn {
+            padding: 8px 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .read-btn:hover {
+            background: #2980b9;
+        }
+
+        .date-info {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .reading-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .reading-view.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .reading-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .reading-view.active .reading-content {
+            transform: scale(1);
+        }
+
+        .reading-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .reading-title {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin: 0 0 10px 0;
+        }
+
+        .reading-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .reading-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reading-body {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .reading-body h1, 
+        .reading-body h2, 
+        .reading-body h3 {
+            color: var(--secondary-color);
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        .reading-body p {
+            margin-bottom: 1em;
+        }
+
+        .reading-tags {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .reading-tag {
+            background: #e8f4fd;
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .reading-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .reading-actions {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .reading-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reading-btn-download {
+            background: var(--success-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-select {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .reading-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .reading-header {
+                text-align: center;
+            }
+            
+            .reading-meta {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><i class="fas fa-graduation-cap"></i> Smart Lecture Notes</h1>
-                <p>Kelola ringkasan perkuliahan</p>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-book-open"></i> Kumpulan Materi Perkuliahan</h1>
+            <p>Temukan dan baca semua ringkasan materi yang telah dibuat</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" id="searchInput" placeholder="Cari materi berdasarkan topik, mata kuliah, atau dosen...">
             </div>
-            <div class="sidebar-nav">
-                <div class="nav-item" data-tab="dashboard">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" data-tab="data-json">
-                    <i class="fas fa-database"></i>
-                    <span>Data JSON</span>
-                </div>
-                <div class="nav-item" data-tab="add-summary">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Tambah Ringkasan</span>
-                </div>
-                <div class="nav-item" data-tab="view-summaries">
-                    <i class="fas fa-list"></i>
-                    <span>Lihat Ringkasan</span>
-                </div>
-                <div class="nav-item" data-tab="export">
-                    <i class="fas fa-download"></i>
-                    <span>Ekspor Data</span>
-                </div>
-                <div class="nav-item" data-tab="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Pengaturan</span>
-                </div>
+            
+            <div class="filters">
+                <select class="filter-select" id="courseFilter">
+                    <option value="">Semua Mata Kuliah</option>
+                </select>
+                <select class="filter-select" id="priorityFilter">
+                    <option value="">Semua Prioritas</option>
+                    <option value="high">Tinggi</option>
+                    <option value="medium">Sedang</option>
+                    <option value="low">Rendah</option>
+                </select>
+                <select class="filter-select" id="dateFilter">
+                    <option value="">Semua Tanggal</option>
+                    <option value="today">Hari Ini</option>
+                    <option value="this-week">Minggu Ini</option>
+                    <option value="this-month">Bulan Ini</option>
+                </select>
             </div>
+        </header>
+        
+        <div class="material-grid" id="materialGrid">
+            <!-- Material cards will be inserted here by JavaScript -->
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Tab -->
-            <div class="tab-content active" id="dashboard">
-                <div class="tab-header">
-                    <h2><i class="fas fa-chart-bar"></i> Dashboard</h2>
-                </div>
-                <div class="dashboard-stats">
-                    <div class="stat-card">
+        
+        <div class="no-results hidden" id="noResults">
+            <i class="fas fa-search"></i>
+            <h3>Materi Tidak Ditemukan</h3>
+            <p>Coba gunakan kata kunci atau filter yang berbeda</p>
+        </div>
+    </div>
+    
+    <!-- Reading View Modal -->
+    <div class="reading-view" id="readingView">
+        <div class="reading-content">
+            <button class="reading-close" id="closeReadingView">&times;</button>
+            <div class="reading-header">
+                <h1 class="reading-title" id="readingTitle">Judul Materi</h1>
+                <div class="reading-meta">
+                    <div class="reading-meta-item">
                         <i class="fas fa-book"></i>
-                        <div class="stat-number" id="totalSummaries">0</div>
-                        <div class="stat-label">Total Ringkasan</div>
+                        <span id="readingCourse">Mata Kuliah</span>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-university"></i>
-                        <div class="stat-number" id="totalCourses">0</div>
-                        <div class="stat-label">Mata Kuliah</div>
+                    <div class="reading-meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span id="readingDate">Tanggal</span>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-calendar-alt"></i>
-                        <div class="stat-number" id="thisWeekSummaries">0</div>
-                        <div class="stat-label">Minggu Ini</div>
+                    <div class="reading-meta-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span id="readingLecturer">Dosen</span>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-tags"></i>
-                        <div class="stat-number" id="totalTags">0</div>
-                        <div class="stat-label">Topik</div>
+                    <div class="reading-meta-item">
+                        <i class="fas fa-hashtag"></i>
+                        <span>Pertemuan <span id="readingMeeting">1</span></span>
+                    </div>
+                    <div class="reading-meta-item">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="readingPriority">Prioritas</span>
                     </div>
                 </div>
-                <div class="recent-summaries">
-                    <h3>Ringkasan Terbaru</h3>
-                    <div id="recentSummariesList" class="summary-list"></div>
-                </div>
-            </div>
-            
-            <!-- Data JSON Tab -->
-            <div class="tab-content" id="data-json">
-                <div class="tab-header">
-                    <h2><i class="fas fa-database"></i> Data JSON</h2>
-                </div>
-                
-                <div class="json-controls">
-                    <button id="loadDataBtn" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Muat Data</button>
-                    <button id="exportJsonBtn" class="btn btn-success"><i class="fas fa-file-export"></i> Ekspor JSON</button>
-                    <button id="resetDataBtn" class="btn btn-danger"><i class="fas fa-redo"></i> Reset Data</button>
-                </div>
-                
-                <div class="json-tabs">
-                    <div class="json-tab active" data-tab="summary">Ringkasan</div>
-                    <div class="json-tab" data-tab="course">Mata Kuliah</div>
-                    <div class="json-tab" data-tab="lecturer">Dosen</div>
-                    <div class="json-tab" data-tab="json">JSON Mentah</div>
-                </div>
-
-                <div class="json-tab-content active" id="summary-json-tab">
-                    <div class="json-form-container">
-                        <h3>Tambah Ringkasan Baru</h3>
-                        <input type="hidden" id="edit-summary-id">
-                        <table class="json-form-table">
-                            <tr>
-                                <td><label for="summary-id">ID:</label></td>
-                                <td><input type="text" id="summary-id" placeholder="ID otomatis jika kosong"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-course">Mata Kuliah:</label></td>
-                                <td><input type="text" id="summary-course" placeholder="Nama mata kuliah"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-meeting">Pertemuan Ke-:</label></td>
-                                <td><input type="number" id="summary-meeting" min="1"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-date">Tanggal:</label></td>
-                                <td><input type="date" id="summary-date"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-lecturer">Dosen:</label></td>                        
-                                <td>
-                                    <select id="summary-lecturer">
-                                        <option value="">Pilih Dosen</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-topic">Topik:</label></td>
-                                <td><input type="text" id="summary-topic" placeholder="Topik pembahasan"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-content">Ringkasan:</label></td>
-                                <td><textarea id="summary-content" placeholder="Ringkasan materi" rows="4"></textarea></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-tags">Tags:</label></td>
-                                <td><input type="text" id="summary-tags" placeholder="Tag/kategori (pisahkan dengan koma)"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="summary-priority">Prioritas:</label></td>
-                                <td>
-                                    <select id="summary-priority">
-                                        <option value="low">Rendah</option>
-                                        <option value="medium" selected>Sedang</option>
-                                        <option value="high">Tinggi</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="json-form-actions">
-                            <button id="addSummaryBtn" class="primary"><i class="fas fa-plus"></i> Tambah Ringkasan</button>
-                            <button id="updateSummaryBtn" class="json-form-actions button secondary hidden"><i class="fas fa-edit"></i> Update Ringkasan</button>
-                            <button id="cancelEditSummaryBtn" class="json-form-actions button danger hidden"><i class="fas fa-times"></i> Batal</button>
-                        </div>
-                    </div>
-                    
-                    <h3>Daftar Ringkasan Materi</h3>
-                    <table class="json-data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Mata Kuliah</th>
-                                <th>Pertemuan</th>
-                                <th>Tanggal</th>
-                                <th>Dosen</th>
-                                <th>Topik</th>
-                                <th>Ringkasan</th>
-                                <th>Tags</th>
-                                <th>Prioritas</th>
-                                <th>Dibuat</th>
-                                <th>Diupdate</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="summary-tbody">
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="json-tab-content" id="course-json-tab">
-                    <div class="json-form-container">
-                        <h3>Tambah Mata Kuliah Baru</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="new-course-name" placeholder="Nama mata kuliah baru" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <button id="addCourseBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah</button>
-                        </div>
-                    </div>
-                    
-                    <h3>Daftar Mata Kuliah</h3>
-                    <table class="json-data-table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Mata Kuliah</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="course-tbody">
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="json-tab-content" id="lecturer-json-tab">
-                    <div class="json-form-container">
-                        <h3>Tambah Dosen Baru</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="new-lecturer-name" placeholder="Nama dosen baru" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <button id="addLecturerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah</button>
-                        </div>
-                    </div>
-                    
-                    <h3>Daftar Dosen</h3>
-                    <table class="json-data-table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Dosen</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lecturer-tbody">
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="json-tab-content" id="json-raw-tab">
-                    <h3>Data JSON Mentah</h3>
-                    <div id="json-display" class="json-display">Data belum dimuat...</div>
+                <div class="reading-tags" id="readingTags">
+                    <!-- Tags will be inserted here -->
                 </div>
             </div>
-
-            <!-- Add Summary Tab -->
-            <div class="tab-content" id="add-summary">
-                <div class="tab-header">
-                    <h2><i class="fas fa-plus-circle"></i> Tambah Ringkasan Baru</h2>
-                </div>
-                <form id="summaryForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="courseName"><i class="fas fa-book"></i> Mata Kuliah</label>
-                            <select id="courseName" required>
-                                <option value="">Pilih Mata Kuliah</option>
-                                <!-- Diisi otomatis oleh JS -->
-                            </select>
-                            <button type="button" class="btn btn-secondary" style="margin-top: 8px; font-size: 0.85rem;" onclick="app.openSettingsTab()">
-                                <i class="fas fa-cog"></i> Kelola Daftar
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label for="meetingNumber"><i class="fas fa-hashtag"></i> Pertemuan Ke-</label>
-                            <input type="number" id="meetingNumber" min="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="meetingDate"><i class="fas fa-calendar"></i> Tanggal Pertemuan</label>
-                            <input type="date" id="meetingDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lecturer"><i class="fas fa-chalkboard-teacher"></i> Dosen Pengajar</label>
-                            <select id="lecturer" required>
-                                <option value="">Pilih Dosen</option>
-                                <!-- Diisi otomatis oleh JS -->
-                            </select>
-                            <button type="button" class="btn btn-secondary" style="margin-top: 8px; font-size: 0.85rem;" onclick="app.openSettingsTab()">
-                                <i class="fas fa-cog"></i> Kelola Daftar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="topic"><i class="fas fa-bullseye"></i> Topik Pembahasan</label>
-                        <input type="text" id="topic" placeholder="Topik yang dibahas" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="summary"><i class="fas fa-file-alt"></i> Ringkasan Materi</label>
-                        <textarea id="summary" required></textarea>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="summaryProgress" style="width: 0%"></div>
-                        </div>
-                        <small id="charCount">0 karakter</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="tags"><i class="fas fa-tags"></i> Tag/Kategori (pisahkan dengan koma)</label>
-                        <input type="text" id="tags" placeholder="Contoh: algoritma, sorting">
-                    </div>
-                    <div class="form-group">
-                        <label for="priority"><i class="fas fa-exclamation-circle"></i> Prioritas</label>
-                        <select id="priority">
-                            <option value="low">Rendah</option>
-                            <option value="medium" selected>Sedang</option>
-                            <option value="high">Tinggi</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="btnReset">
-                            <i class="fas fa-redo"></i> Reset
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Simpan Ringkasan
-                        </button>
-                        <button type="button" class="btn btn-success" id="btnDownloadMD">
-                            <i class="fas fa-download"></i> Unduh .md
-                        </button>
-                    </div>
-                </form>
+            <div class="reading-body" id="readingBody">
+                <!-- Content will be inserted here -->
             </div>
-
-            <!-- View Summaries Tab -->
-            <div class="tab-content" id="view-summaries">
-                <div class="tab-header">
-                    <h2><i class="fas fa-list"></i> Semua Ringkasan</h2>
-                    <div class="search-filter">
-                        <input type="text" id="searchInput" placeholder="Cari ringkasan...">
-                        <select id="courseFilter">
-                            <option value="">Semua Mata Kuliah</option>
-                        </select>
-                        <select id="priorityFilter">
-                            <option value="">Semua Prioritas</option>
-                            <option value="high">Tinggi</option>
-                            <option value="medium">Sedang</option>
-                            <option value="low">Rendah</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="summaryList" class="summary-list"></div>
-            </div>
-
-            <!-- Export Tab -->
-            <div class="tab-content" id="export">
-                <div class="tab-header">
-                    <h2><i class="fas fa-download"></i> Ekspor Data</h2>
-                </div>
-                <div class="export-options">
-                    <div class="export-card" id="exportJSON">
-                        <i class="fas fa-file-code"></i>
-                        <h3>Ekspor JSON</h3>
-                    </div>
-                    <div class="export-card" id="exportCSV">
-                        <i class="fas fa-file-csv"></i>
-                        <h3>Ekspor CSV</h3>
-                    </div>
-                    <div class="export-card" id="exportAllMD">
-                        <i class="fas fa-file-alt"></i>
-                        <h3>Ekspor Semua .md</h3>
-                    </div>
-                </div>
-                <div class="backup-section">
-                    <h3>Backup & Restore</h3>
-                    <button class="btn btn-secondary" id="importData">
-                        <i class="fas fa-upload"></i> Import Data
-                    </button>
-                    <input type="file" id="importFile" accept=".json" style="display: none;">
-                </div>
-            </div>
-
-            <!-- Settings Tab -->
-            <div class="tab-content" id="settings">
-                <div class="tab-header">
-                    <h2><i class="fas fa-cog"></i> Pengaturan</h2>
-                </div>
-
-                <!-- Master Mata Kuliah -->
-                <div class="master-section">
-                    <div class="master-header">
-                        <h3><i class="fas fa-book"></i> Daftar Mata Kuliah</h3>
-                        <button class="btn btn-primary" id="addCourseBtn">
-                            <i class="fas fa-plus"></i> Tambah
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="newCourseInput" placeholder="Nama mata kuliah baru" style="margin-bottom: 10px;">
-                    </div>
-                    <div class="master-list" id="courseList">
-                        <!-- Diisi oleh JS -->
-                    </div>
-                </div>
-
-                <!-- Master Dosen -->
-                <div class="master-section">
-                    <div class="master-header">
-                        <h3><i class="fas fa-chalkboard-teacher"></i> Daftar Dosen</h3>
-                        <button class="btn btn-primary" id="addLecturerBtn">
-                            <i class="fas fa-plus"></i> Tambah
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="newLecturerInput" placeholder="Nama dosen baru" style="margin-bottom: 10px;">
-                    </div>
-                    <div class="master-list" id="lecturerList">
-                        <!-- Diisi oleh JS -->
-                    </div>
-                </div>
-
-                <!-- Other Settings -->
-                <div class="master-section">
-                    <h3><i class="fas fa-sliders-h"></i> Pengaturan Umum</h3>
-                    <div class="form-group">
-                        <label for="autoSave"><i class="fas fa-save"></i> Auto-save Draft</label>
-                        <select id="autoSave">
-                            <option value="true">Aktif</option>
-                            <option value="false">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="theme"><i class="fas fa-palette"></i> Tema</label>
-                        <select id="theme">
-                            <option value="default">Default</option>
-                            <option value="dark">Dark Mode</option>
-                            <option value="light">Light Mode</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-danger" id="clearAllData">
-                            <i class="fas fa-trash"></i> Hapus Semua Data
-                        </button>
-                    </div>
-                </div>
+            <div class="reading-actions">
+                <button class="reading-btn reading-btn-download" id="downloadReadingSummary">
+                    <i class="fas fa-download"></i> Download .md
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class="toast" id="toast"></div>
+    <!-- Sistem database JSON -->
+    <script src="jsondb.js"></script>
+    
+    <script>
+        // Data akan dimuat dari jsonDB
+        let allMaterials = [];
+        let currentMaterial = null;
         
-        <!-- Reading View Modal -->
-        <div class="reading-view" id="readingView">
-            <div class="reading-content">
-                <button class="reading-close" id="closeReadingView">&times;</button>
-                <div class="reading-header">
-                    <h1 class="reading-title" id="readingTitle">Judul Materi</h1>
-                    <div class="reading-meta">
-                        <div class="reading-meta-item">
-                            <i class="fas fa-book"></i>
-                            <span id="readingCourse">Mata Kuliah</span>
-                        </div>
-                        <div class="reading-meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <span id="readingDate">Tanggal</span>
-                        </div>
-                        <div class="reading-meta-item">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span id="readingLecturer">Dosen</span>
-                        </div>
-                        <div class="reading-meta-item">
-                            <i class="fas fa-hashtag"></i>
-                            <span>Pertemuan <span id="readingMeeting">1</span></span>
-                        </div>
-                        <div class="reading-meta-item">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span id="readingPriority">Prioritas</span>
-                        </div>
-                    </div>
-                    <div class="reading-tags" id="readingTags">
-                        <!-- Tags will be inserted here -->
-                    </div>
-                </div>
-                <div class="reading-body" id="readingBody">
-                    <!-- Content will be inserted here -->
-                </div>
-                <div class="reading-actions">
-                    <button class="reading-btn reading-btn-edit" id="editReadingSummary">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="reading-btn reading-btn-download" id="downloadReadingSummary">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- jQuery dan Popper (dibutuhkan oleh Bootstrap) -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-        
-        <!-- Summernote JS -->
-        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/lang/summernote-id-ID.min.js"></script>
-        
-        <script>
-            class LectureNotesApp {
-                constructor() {
-                    this.currentEditingId = null;
-                    this.currentJsonData = null;
-                    this.jsonTabEventListenersSet = false;
-                    this.currentReadingSummaryId = null;
-                    this.init();
-                }
-
-                async loadSummaries() {
-                    this.summaries = await jsonDB.getAllSummaries();
-                    return this.summaries;
-                }
-
-                async loadCourses() {
-                    this.courses = await jsonDB.getAllCourses();
-                    return this.courses;
-                }
-
-                async loadLecturers() {
-                    this.lecturers = await jsonDB.getAllLecturers();
-                    return this.lecturers;
-                }
-
-                async saveSummaries() {
-                    // Data disimpan dalam database JSON terpusat
-                    this.updateDashboard();
-                }
-
-                async saveCourses() {
-                    // Data disimpan dalam database JSON terpusat
-                    this.populateCourseDropdown();
-                }
-
-                async saveLecturers() {
-                    // Data disimpan dalam database JSON terpusat
-                    this.populateLecturerDropdown();
-                }
-
-                async init() {
-                    // Muat semua data dari database JSON
-                    await this.loadSummaries();
-                    await this.loadCourses();
-                    await this.loadLecturers();
-                    
-                    this.setupEventListeners();
-                    this.populateCourseDropdown();
-                    this.populateLecturerDropdown();
-                    this.displaySummaries();
-                    this.updateDashboard();
-                    this.loadCoursesFilter();
-                    document.getElementById('meetingDate').valueAsDate = new Date();
-                    this.initSummernote();
-                    
-                    // Tampilkan tab aktif pertama kali - menggunakan dashboard agar data ringkasan langsung tampil
-                    this.switchToTab('dashboard');
-                }
-
-                initSummernote() {
-                    if ($('#summary').length) {
-                        $('#summary').summernote({
-                            placeholder: 'Tulis ringkasan materi...',
-                            tabsize: 2,
-                            height: 200,
-                            minHeight: null,
-                            maxHeight: null,
-                            focus: true,
-                            lang: 'id-ID',
-                            toolbar: [
-                                ['style', ['style']],
-                                ['font', ['bold', 'underline', 'clear']],
-                                ['fontsize', ['fontsize']],
-                                ['color', ['color']],
-                                ['para', ['ul', 'ol', 'paragraph']],
-                                ['table', ['table']],
-                                ['insert', ['link', 'picture', 'video']],
-                                ['view', ['fullscreen', 'codeview']]
-                            ],
-                            callbacks: {
-                                onInit: () => {
-                                    this.updateCharCount();
-                                },
-                                onChange: () => {
-                                    this.updateCharCount();
-                                },
-                                onKeyup: () => {
-                                    this.updateCharCount();
-                                },
-                                onPaste: () => {
-                                    setTimeout(() => {
-                                        this.updateCharCount();
-                                    }, 10);
-                                }
-                            }
-                        });
-                    }
-                }
-
-                setupEventListeners() {
-                    // Navigation
-                    document.querySelectorAll('.nav-item').forEach(item => {
-                        item.addEventListener('click', () => {
-                            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                            item.classList.add('active');
-                            document.getElementById(item.dataset.tab).classList.add('active');
-                            
-                            // Reinitialize Summernote when switching to add-summary tab
-                            if (item.dataset.tab === 'add-summary') {
-                                setTimeout(() => {
-                                    this.initSummernote();
-                                }, 100);
-                            }
-                        });
-                    });
-
-                    // Form
-                    document.getElementById('summaryForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
-                    document.getElementById('btnReset').addEventListener('click', () => this.resetForm());
-                    document.getElementById('btnDownloadMD').addEventListener('click', () => this.downloadCurrentAsMD());
-
-                    // Master Data
-                    document.getElementById('addCourseBtn').addEventListener('click', () => this.addCourse());
-                    document.getElementById('addLecturerBtn').addEventListener('click', () => this.addLecturer());
-                    document.getElementById('newCourseInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') this.addCourse(); });
-                    document.getElementById('newLecturerInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') this.addLecturer(); });
-
-                    // Other
-                    document.getElementById('searchInput').addEventListener('input', () => this.filterSummaries());
-                    document.getElementById('courseFilter').addEventListener('change', () => this.filterSummaries());
-                    document.getElementById('priorityFilter').addEventListener('change', () => this.filterSummaries());
-                    document.getElementById('exportJSON').addEventListener('click', () => this.exportJSON());
-                    document.getElementById('exportCSV').addEventListener('click', () => this.exportCSV());
-                    document.getElementById('exportAllMD').addEventListener('click', () => this.exportAllAsMD());
-                    document.getElementById('importData').addEventListener('click', () => document.getElementById('importFile').click());
-                    document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
-                    document.getElementById('clearAllData').addEventListener('click', () => this.clearAllData());
-                    document.getElementById('autoSave').addEventListener('change', (e) => this.updateSettings(e));
-                    document.getElementById('theme').addEventListener('change', (e) => this.updateSettings(e));
-                    
-                    // Event listeners untuk tampilan bacaan
-                    document.getElementById('closeReadingView').addEventListener('click', () => this.hideReadingView());
-                    document.getElementById('editReadingSummary').addEventListener('click', () => this.editSummaryFromReadingView());
-                    document.getElementById('downloadReadingSummary').addEventListener('click', () => this.downloadSummaryFromReadingView());
-                    
-                    // Cek apakah pengguna mengklik area di luar konten bacaan untuk menutup modal
-                    document.getElementById('readingView').addEventListener('click', (e) => {
-                        if (e.target.id === 'readingView') {
-                            this.hideReadingView();
-                        }
-                    });
-                }
-
-                populateCourseDropdown() {
-                    const select = document.getElementById('courseName');
-                    select.innerHTML = '<option value="">Pilih Mata Kuliah</option>';
-                    this.courses.forEach(course => {
-                        select.innerHTML += `<option value="${this.escapeHtml(course)}">${this.escapeHtml(course)}</option>`;
-                    });
-                }
-
-                populateLecturerDropdown() {
-                    const select = document.getElementById('lecturer');
-                    select.innerHTML = '<option value="">Pilih Dosen</option>';
-                    this.lecturers.forEach(lecturer => {
-                        select.innerHTML += `<option value="${this.escapeHtml(lecturer)}">${this.escapeHtml(lecturer)}</option>`;
-                    });
-                }
-
-                async addCourse() {
-                    const input = document.getElementById('newCourseInput');
-                    const name = input.value.trim();
-                    
-                    // Cek apakah mata kuliah sudah ada
-                    const allCourses = await jsonDB.getAllCourses();
-                    if (name && !allCourses.includes(name)) {
-                        await jsonDB.addCourse(name);
-                        await this.loadCourses(); // Refresh data
-                        input.value = '';
-                        this.renderCourseList();
-                        this.showToast('Mata kuliah berhasil ditambahkan!', 'success');
-                    } else if (name) {
-                        this.showToast('Mata kuliah sudah ada!', 'warning');
-                    }
-                }
-
-                async addLecturer() {
-                    const input = document.getElementById('newLecturerInput');
-                    const name = input.value.trim();
-                    
-                    // Cek apakah dosen sudah ada
-                    const allLecturers = await jsonDB.getAllLecturers();
-                    if (name && !allLecturers.includes(name)) {
-                        await jsonDB.addLecturer(name);
-                        await this.loadLecturers(); // Refresh data
-                        input.value = '';
-                        this.renderLecturerList();
-                        this.showToast('Dosen berhasil ditambahkan!', 'success');
-                    } else if (name) {
-                        this.showToast('Dosen sudah ada!', 'warning');
-                    }
-                }
-
-                async deleteCourse(courseName) {
-                    if (confirm(`Hapus "${courseName}"?`)) {
-                        await jsonDB.deleteCourse(courseName);
-                        await this.loadCourses(); // Refresh data
-                        this.renderCourseList();
-                    }
-                }
-
-                async deleteLecturer(lecturerName) {
-                    if (confirm(`Hapus "${lecturerName}"?`)) {
-                        await jsonDB.deleteLecturer(lecturerName);
-                        await this.loadLecturers(); // Refresh data
-                        this.renderLecturerList();
-                    }
-                }
-
-                async renderCourseList() {
-                    // Refresh data dari database JSON
-                    await this.loadCourses();
-                    const list = document.getElementById('courseList');
-                    list.innerHTML = this.courses.map(course => `
-                        <div class="master-item">
-                            <span>${this.escapeHtml(course)}</span>
-                            <button class="btn btn-danger btn-sm" onclick="app.deleteCourse('${this.escapeHtml(course)}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `).join('');
-                }
-
-                async renderLecturerList() {
-                    // Refresh data dari database JSON
-                    await this.loadLecturers();
-                    const list = document.getElementById('lecturerList');
-                    list.innerHTML = this.lecturers.map(lecturer => `
-                        <div class="master-item">
-                            <span>${this.escapeHtml(lecturer)}</span>
-                            <button class="btn btn-danger btn-sm" onclick="app.deleteLecturer('${this.escapeHtml(lecturer)}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `).join('');
-                }
-
-                escapeHtml(text) {
-                    const div = document.createElement('div');
-                    div.textContent = text;
-                    return div.innerHTML;
-                }
-
-                async openSettingsTab() {
-                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                    document.querySelector('[data-tab="settings"]').classList.add('active');
-                    document.getElementById('settings').classList.add('active');
-                    await this.renderCourseList();
-                    await this.renderLecturerList();
-                }
-
-                async handleFormSubmit(e) {
-                    e.preventDefault();
-                    
-                    // Get Summernote content if available
-                    let summaryContent = '';
-                    if ($('#summary').summernote('code')) {
-                        summaryContent = $('#summary').summernote('code');
-                    } else {
-                        summaryContent = document.getElementById('summary').value;
-                    }
-                    
-                    const summaryData = {
-                        id: this.currentEditingId || Date.now().toString(),
-                        courseName: document.getElementById('courseName').value,
-                        meetingNumber: parseInt(document.getElementById('meetingNumber').value),
-                        meetingDate: document.getElementById('meetingDate').value,
-                        lecturer: document.getElementById('lecturer').value,
-                        topic: document.getElementById('topic').value,
-                        summary: summaryContent,
-                        tags: document.getElementById('tags').value,
-                        priority: document.getElementById('priority').value,
-                        createdAt: this.currentEditingId ? 
-                            (await jsonDB.getSummaryById(this.currentEditingId)).createdAt : 
-                            new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-
-                    if (this.currentEditingId) {
-                        await jsonDB.updateSummary(this.currentEditingId, summaryData);
-                    } else {
-                        await jsonDB.addSummary(summaryData);
-                    }
-
-                    await this.loadSummaries(); // Refresh data from database
-                    this.displaySummaries();
-                    
-                    // Automatically download as .md file after saving
-                    this.downloadSummaryAsMD(summaryData);
-                    
-                    this.resetForm();
-                    this.showToast(this.currentEditingId ? 'Ringkasan berhasil diperbarui!' : 'Ringkasan berhasil disimpan!', 'success');
-                }
-
-                resetForm() {
-                    document.getElementById('summaryForm').reset();
-                    document.getElementById('meetingDate').valueAsDate = new Date();
-                    this.currentEditingId = null;
-                    document.querySelector('#add-summary .btn-primary').innerHTML = '<i class="fas fa-save"></i> Simpan Ringkasan';
-                    document.querySelector('#add-summary h2').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Ringkasan Baru';
-                    
-                    // Reset Summernote
-                    if ($('#summary').summernote('code')) {
-                        $('#summary').summernote('code', '');
-                    }
-                    
-                    this.updateCharCount();
-                }
-
-                // Generate Markdown content from summary data
-                generateMarkdownContent(summary) {
-                    const date = new Date(summary.meetingDate).toLocaleDateString('id-ID');
-                    
-                    let markdown = `# ${summary.courseName} - Pertemuan ${summary.meetingNumber}\n\n`;
-                    markdown += `**Topik:** ${summary.topic}\n\n`;
-                    markdown += `**Tanggal:** ${date}\n\n`;
-                    markdown += `**Dosen:** ${summary.lecturer}\n\n`;
-                    markdown += `**Prioritas:** ${this.getPriorityLabel(summary.priority)}\n\n`;
-                    
-                    if (summary.tags) {
-                        markdown += `**Tags:** ${summary.tags}\n\n`;
-                    }
-                    
-                    markdown += `---\n\n`;
-                    markdown += `${summary.summary}\n\n`;
-                    markdown += `---\n\n`;
-                    markdown += `*Dibuat pada: ${new Date(summary.createdAt).toLocaleString('id-ID')}*\n`;
-                    markdown += `*Terakhir diupdate: ${new Date(summary.updatedAt).toLocaleString('id-ID')}*\n`;
-                    
-                    return markdown;
-                }
-
-                // Download current form as .md file
-                downloadCurrentAsMD() {
-                    const topic = document.getElementById('topic').value.trim();
-                    if (!topic) {
-                        this.showToast('Harap isi topik pembahasan terlebih dahulu!', 'warning');
-                        return;
-                    }
-                    
-                    // Get Summernote content if available
-                    let summaryContent = '';
-                    if ($('#summary').summernote('code')) {
-                        summaryContent = $('#summary').summernote('code');
-                    } else {
-                        summaryContent = document.getElementById('summary').value;
-                    }
-                    
-                    if (!summaryContent.trim()) {
-                        this.showToast('Harap isi ringkasan materi terlebih dahulu!', 'warning');
-                        return;
-                    }
-                    
-                    const tempSummary = {
-                        courseName: document.getElementById('courseName').value || 'Mata Kuliah',
-                        meetingNumber: parseInt(document.getElementById('meetingNumber').value) || 1,
-                        meetingDate: document.getElementById('meetingDate').value || new Date().toISOString().split('T')[0],
-                        lecturer: document.getElementById('lecturer').value || 'Dosen',
-                        topic: topic,
-                        summary: summaryContent,
-                        tags: document.getElementById('tags').value || '',
-                        priority: document.getElementById('priority').value || 'medium',
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-                    
-                    this.downloadSummaryAsMD(tempSummary);
-                }
-
-                // Download single summary as .md file
-                downloadSummaryAsMD(summary) {
-                    const markdownContent = this.generateMarkdownContent(summary);
-                    const filename = this.generateFilename(summary.topic) + '.md';
-                    
-                    const blob = new Blob([markdownContent], { type: 'text/markdown' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    
-                    this.showToast(`File ${filename} berhasil diunduh!`, 'success');
-                }
-
-                // Generate filename from topic
-                generateFilename(topic) {
-                    // Remove special characters and replace spaces with underscores
-                    return topic
-                        .toLowerCase()
-                        .replace(/[^a-z0-9\s]/g, '')
-                        .replace(/\s+/g, '_')
-                        .substring(0, 50); // Limit filename length
-                }
-
-                async exportAllAsMD() {
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    if (allSummaries.length === 0) {
-                        this.showToast('Tidak ada ringkasan untuk diekspor!', 'warning');
-                        return;
-                    }
-                    
-                    // Create a zip file containing all .md files
-                    const zip = new JSZip();
-                    
-                    allSummaries.forEach(summary => {
-                        const markdownContent = this.generateMarkdownContent(summary);
-                        const filename = this.generateFilename(summary.topic) + '.md';
-                        zip.file(filename, markdownContent);
-                    });
-                    
-                    zip.generateAsync({ type: 'blob' }).then(content => {
-                        const url = URL.createObjectURL(content);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `ringkasan-perkuliahan-${new Date().toISOString().slice(0, 10)}.zip`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        
-                        this.showToast(`Semua ringkasan berhasil diekspor!`, 'success');
-                    });
-                }
-
-                async editSummary(id) {
-                    const summary = await jsonDB.getSummaryById(id);
-                    if (!summary) return;
-
-                    document.getElementById('courseName').value = summary.courseName;
-                    document.getElementById('meetingNumber').value = summary.meetingNumber;
-                    document.getElementById('meetingDate').value = summary.meetingDate;
-                    document.getElementById('lecturer').value = summary.lecturer;
-                    document.getElementById('topic').value = summary.topic;
-                    document.getElementById('tags').value = summary.tags;
-                    document.getElementById('priority').value = summary.priority;
-
-                    // Set Summernote content
-                    if ($('#summary').summernote('code')) {
-                        $('#summary').summernote('code', summary.summary);
-                    } else {
-                        document.getElementById('summary').value = summary.summary;
-                    }
-
-                    this.currentEditingId = id;
-                    document.querySelector('#add-summary .btn-primary').innerHTML = '<i class="fas fa-edit"></i> Update Ringkasan';
-                    document.querySelector('#add-summary h2').innerHTML = '<i class="fas fa-edit"></i> Edit Ringkasan';
-
-                    this.switchToTab('add-summary');
-                }
-
-                switchToTab(tabId) {
-                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // Reinitialize Summernote when switching to add-summary tab
-                    if (tabId === 'add-summary') {
-                        setTimeout(() => {
-                            this.initSummernote();
-                        }, 100);
-                    }
-                    
-                    // Panggil fungsi untuk menampilkan data JSON jika berpindah ke tab data-json
-                    if (tabId === 'data-json') {
-                        // Muat data dari jsonDB dan tampilkan di tab JSON
-                        this.loadJsonTabData();
-                    }
-                }
-                
-                // Muat data untuk tab JSON
-                async loadJsonTabData() {
-                    try {
-                        this.currentJsonData = await jsonDB.loadData();
-                        this.displayJsonTabSummaries();
-                        this.displayJsonTabCourses();
-                        this.displayJsonTabLecturers();
-                        this.populateJsonTabLecturerDropdown();
-                        document.getElementById('json-display').textContent = JSON.stringify(this.currentJsonData, null, 2);
-                        
-                        // Setel event listeners untuk tab JSON jika belum disetel
-                        if (!this.jsonTabEventListenersSet) {
-                            this.setupJsonTabEventListeners();
-                            this.jsonTabEventListenersSet = true;
-                        }
-                    } catch (error) {
-                        console.error('Error memuat data JSON:', error);
-                    }
-                }
-                
-                // Tampilkan ringkasan di tab JSON
-                displayJsonTabSummaries() {
-                    const tbody = document.getElementById('summary-tbody');
-                    tbody.innerHTML = '';
-                    
-                    if (!this.currentJsonData || !this.currentJsonData.summaries) return;
-                    
-                    this.currentJsonData.summaries.forEach(summary => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = summary.id;
-                        row.insertCell(1).textContent = summary.courseName || '';
-                        row.insertCell(2).textContent = summary.meetingNumber || '';
-                        row.insertCell(3).textContent = summary.meetingDate || '';
-                        row.insertCell(4).textContent = summary.lecturer || '';
-                        row.insertCell(5).textContent = summary.topic || '';
-                        row.insertCell(6).textContent = summary.summary ? 
-                            (summary.summary.length > 50 ? summary.summary.substring(0, 50) + '...' : summary.summary) : '';
-                        row.insertCell(7).textContent = summary.tags || '';
-                        row.insertCell(8).textContent = summary.priority || '';
-                        row.insertCell(9).textContent = new Date(summary.createdAt).toLocaleString() || '';
-                        row.insertCell(10).textContent = new Date(summary.updatedAt).toLocaleString() || '';
-                        
-                        // Tambahkan kolom aksi
-                        const actionCell = row.insertCell(11);
-                        actionCell.innerHTML = `
-                            <button class="btn btn-sm json-action-btn" style="background: #2ecc71;" onclick="app.showReadingView('${summary.id}')"><i class="fas fa-book-open"></i> Baca</button>
-                            <button class="btn btn-sm json-action-btn edit" onclick="app.editJsonTabSummary('${summary.id}')"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-sm json-action-btn delete" onclick="app.deleteJsonTabSummary('${summary.id}')"><i class="fas fa-trash"></i> Hapus</button>
-                        `;
-                    });
-                }
-
-                // Tampilkan mata kuliah di tab JSON
-                displayJsonTabCourses() {
-                    const tbody = document.getElementById('course-tbody');
-                    tbody.innerHTML = '';
-                    
-                    if (!this.currentJsonData || !this.currentJsonData.courses) return;
-                    
-                    this.currentJsonData.courses.forEach((course, index) => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = index + 1;
-                        row.insertCell(1).textContent = course;
-                        
-                        // Tambahkan kolom aksi
-                        const actionCell = row.insertCell(2);
-                        actionCell.innerHTML = `
-                            <button class="btn btn-sm json-action-btn delete" onclick="app.deleteJsonTabCourse('${course.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
-                        `;
-                    });
-                }
-
-                // Tampilkan dosen di tab JSON
-                displayJsonTabLecturers() {
-                    const tbody = document.getElementById('lecturer-tbody');
-                    tbody.innerHTML = '';
-                    
-                    if (!this.currentJsonData || !this.currentJsonData.lecturers) return;
-                    
-                    this.currentJsonData.lecturers.forEach((lecturer, index) => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = index + 1;
-                        row.insertCell(1).textContent = lecturer;
-                        
-                        // Tambahkan kolom aksi
-                        const actionCell = row.insertCell(2);
-                        actionCell.innerHTML = `
-                            <button class="btn btn-sm json-action-btn delete" onclick="app.deleteJsonTabLecturer('${lecturer.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
-                        `;
-                    });
-                }
-                
-                // Isi dropdown dosen di formulir tab JSON
-                populateJsonTabLecturerDropdown() {
-                    const lecturerSelect = document.getElementById('summary-lecturer');
-                    lecturerSelect.innerHTML = '<option value="">Pilih Dosen</option>';
-                    
-                    if (!this.currentJsonData || !this.currentJsonData.lecturers) return;
-                    
-                    this.currentJsonData.lecturers.forEach(lecturer => {
-                        const option = document.createElement('option');
-                        option.value = lecturer;
-                        option.textContent = lecturer;
-                        lecturerSelect.appendChild(option);
-                    });
-                }
-                
-                // Edit ringkasan di tab JSON
-                async editJsonTabSummary(id) {
-                    const summary = await jsonDB.getSummaryById(id);
-                    if (!summary) return;
-
-                    document.getElementById('edit-summary-id').value = summary.id;
-                    document.getElementById('summary-id').value = summary.id;
-                    document.getElementById('summary-course').value = summary.courseName;
-                    document.getElementById('summary-meeting').value = summary.meetingNumber;
-                    document.getElementById('summary-date').value = summary.meetingDate;
-                    document.getElementById('summary-lecturer').value = summary.lecturer;
-                    document.getElementById('summary-topic').value = summary.topic;
-                    document.getElementById('summary-content').value = summary.summary;
-                    document.getElementById('summary-tags').value = summary.tags || '';
-                    document.getElementById('summary-priority').value = summary.priority;
-                    
-                    // Tampilkan tombol update dan sembunyikan tombol add
-                    document.getElementById('addSummaryBtn').classList.add('hidden');
-                    document.getElementById('updateSummaryBtn').classList.remove('hidden');
-                    document.getElementById('cancelEditSummaryBtn').classList.remove('hidden');
-                    
-                    // Scroll ke formulir
-                    document.querySelector('.json-form-container').scrollIntoView({ behavior: 'smooth' });
-                }
-                
-                // Hapus ringkasan di tab JSON
-                async deleteJsonTabSummary(id) {
-                    if (confirm('Apakah Anda yakin ingin menghapus ringkasan ini?')) {
-                        await jsonDB.deleteSummary(id);
-                        await this.loadJsonTabData(); // Refresh data
-                    }
-                }
-                
-                // Hapus mata kuliah di tab JSON
-                async deleteJsonTabCourse(courseName) {
-                    if (confirm(`Apakah Anda yakin ingin menghapus mata kuliah "${courseName}"?`)) {
-                        await jsonDB.deleteCourse(courseName);
-                        await this.loadJsonTabData(); // Refresh data
-                    }
-                }
-                
-                // Hapus dosen di tab JSON
-                async deleteJsonTabLecturer(lecturerName) {
-                    if (confirm(`Apakah Anda yakin ingin menghapus dosen "${lecturerName}"?`)) {
-                        await jsonDB.deleteLecturer(lecturerName);
-                        await this.loadJsonTabData(); // Refresh data
-                    }
-                }
-                
-                // Setel event listeners untuk tab JSON
-                setupJsonTabEventListeners() {
-                    // Event listeners untuk tab JSON
-                    document.querySelectorAll('.json-tab').forEach(tab => {
-                        tab.addEventListener('click', () => {
-                            // Hapus kelas active dari semua tab
-                            document.querySelectorAll('.json-tab').forEach(t => t.classList.remove('active'));
-                            document.querySelectorAll('.json-tab-content').forEach(c => c.classList.remove('active'));
-                            
-                            // Tambahkan kelas active ke tab yang diklik
-                            tab.classList.add('active');
-                            
-                            // Tampilkan konten tab yang sesuai
-                            const tabId = tab.getAttribute('data-tab');
-                            document.getElementById(`${tabId}-json-tab`).classList.add('active');
-                        });
-                    });
-                    
-                    // Event listeners untuk formulir CRUD di tab JSON
-                    document.getElementById('addSummaryBtn').addEventListener('click', () => this.addJsonTabSummary());
-                    document.getElementById('updateSummaryBtn').addEventListener('click', () => this.updateJsonTabSummary());
-                    document.getElementById('cancelEditSummaryBtn').addEventListener('click', () => this.cancelEditJsonTabSummary());
-                    document.getElementById('addCourseBtn').addEventListener('click', () => this.addJsonTabCourse());
-                    document.getElementById('addLecturerBtn').addEventListener('click', () => this.addJsonTabLecturer());
-                    document.getElementById('loadDataBtn').addEventListener('click', () => this.loadJsonTabData());
-                    document.getElementById('exportJsonBtn').addEventListener('click', () => this.exportJsonTabData());
-                    document.getElementById('resetDataBtn').addEventListener('click', () => this.resetJsonTabData());
-                }
-                
-                // Tambah ringkasan di tab JSON
-                async addJsonTabSummary() {
-                    const id = document.getElementById('summary-id').value || Date.now().toString();
-                    const course = document.getElementById('summary-course').value;
-                    const meeting = document.getElementById('summary-meeting').value;
-                    const date = document.getElementById('summary-date').value;
-                    const lecturer = document.getElementById('summary-lecturer').value;
-                    const topic = document.getElementById('summary-topic').value;
-                    const content = document.getElementById('summary-content').value;
-                    const tags = document.getElementById('summary-tags').value;
-                    const priority = document.getElementById('summary-priority').value;
-                    
-                    if (!course || !meeting || !date || !lecturer || !topic || !content) {
-                        this.showToast('Mohon lengkapi semua field yang wajib!', 'warning');
-                        return;
-                    }
-                    
-                    const newSummary = {
-                        id: id,
-                        courseName: course,
-                        meetingNumber: parseInt(meeting),
-                        meetingDate: date,
-                        lecturer: lecturer,
-                        topic: topic,
-                        summary: content,
-                        tags: tags,
-                        priority: priority,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-                    
-                    try {
-                        await jsonDB.addSummary(newSummary);
-                        await this.loadJsonTabData(); // Refresh data
-                        await this.resetJsonTabSummaryForm();
-                        this.showToast('Ringkasan berhasil ditambahkan!', 'success');
-                    } catch (error) {
-                        console.error('Error menambah ringkasan:', error);
-                        this.showToast('Error menambah ringkasan: ' + error.message, 'error');
-                    }
-                }
-                
-                // Update ringkasan di tab JSON
-                async updateJsonTabSummary() {
-                    const id = document.getElementById('edit-summary-id').value;
-                    const course = document.getElementById('summary-course').value;
-                    const meeting = document.getElementById('summary-meeting').value;
-                    const date = document.getElementById('summary-date').value;
-                    const lecturer = document.getElementById('summary-lecturer').value;
-                    const topic = document.getElementById('summary-topic').value;
-                    const content = document.getElementById('summary-content').value;
-                    const tags = document.getElementById('summary-tags').value;
-                    const priority = document.getElementById('summary-priority').value;
-                    
-                    if (!id || !course || !meeting || !date || !lecturer || !topic || !content) {
-                        this.showToast('Mohon lengkapi semua field yang wajib!', 'warning');
-                        return;
-                    }
-                    
-                    const updatedSummary = {
-                        id: id,
-                        courseName: course,
-                        meetingNumber: parseInt(meeting),
-                        meetingDate: date,
-                        lecturer: lecturer,
-                        topic: topic,
-                        summary: content,
-                        tags: tags,
-                        priority: priority,
-                        updatedAt: new Date().toISOString()
-                    };
-                    
-                    try {
-                        await jsonDB.updateSummary(id, updatedSummary);
-                        await this.loadJsonTabData(); // Refresh data
-                        await this.resetJsonTabSummaryForm();
-                        this.showToast('Ringkasan berhasil diperbarui!', 'success');
-                    } catch (error) {
-                        console.error('Error memperbarui ringkasan:', error);
-                        this.showToast('Error memperbarui ringkasan: ' + error.message, 'error');
-                    }
-                }
-                
-                // Batal edit ringkasan di tab JSON
-                async cancelEditJsonTabSummary() {
-                    await this.resetJsonTabSummaryForm();
-                }
-                
-                // Reset formulir ringkasan di tab JSON
-                async resetJsonTabSummaryForm() {
-                    document.getElementById('edit-summary-id').value = '';
-                    document.getElementById('summary-id').value = '';
-                    document.getElementById('summary-course').value = '';
-                    document.getElementById('summary-meeting').value = '';
-                    document.getElementById('summary-date').value = '';
-                    document.getElementById('summary-lecturer').value = '';
-                    document.getElementById('summary-topic').value = '';
-                    document.getElementById('summary-content').value = '';
-                    document.getElementById('summary-tags').value = '';
-                    document.getElementById('summary-priority').value = 'medium';
-                    
-                    // Kembalikan tombol ke keadaan awal
-                    document.getElementById('addSummaryBtn').classList.remove('hidden');
-                    document.getElementById('updateSummaryBtn').classList.add('hidden');
-                    document.getElementById('cancelEditSummaryBtn').classList.add('hidden');
-                    
-                    // Perbarui dropdown dosen
-                    this.populateJsonTabLecturerDropdown();
-                }
-                
-                // Tambah mata kuliah di tab JSON
-                async addJsonTabCourse() {
-                    const courseName = document.getElementById('new-course-name').value.trim();
-                    
-                    if (!courseName) {
-                        this.showToast('Nama mata kuliah tidak boleh kosong!', 'warning');
-                        return;
-                    }
-                    
-                    try {
-                        const result = await jsonDB.addCourse(courseName);
-                        if (result) {
-                            await this.loadJsonTabData(); // Refresh data
-                            document.getElementById('new-course-name').value = '';
-                            this.showToast('Mata kuliah berhasil ditambahkan!', 'success');
-                        } else {
-                            this.showToast('Mata kuliah sudah ada!', 'warning');
-                        }
-                    } catch (error) {
-                        console.error('Error menambah mata kuliah:', error);
-                        this.showToast('Error menambah mata kuliah: ' + error.message, 'error');
-                    }
-                }
-                
-                // Tambah dosen di tab JSON
-                async addJsonTabLecturer() {
-                    const lecturerName = document.getElementById('new-lecturer-name').value.trim();
-                    
-                    if (!lecturerName) {
-                        this.showToast('Nama dosen tidak boleh kosong!', 'warning');
-                        return;
-                    }
-                    
-                    try {
-                        const result = await jsonDB.addLecturer(lecturerName);
-                        if (result) {
-                            await this.loadJsonTabData(); // Refresh data
-                            document.getElementById('new-lecturer-name').value = '';
-                            this.showToast('Dosen berhasil ditambahkan!', 'success');
-                        } else {
-                            this.showToast('Dosen sudah ada!', 'warning');
-                        }
-                    } catch (error) {
-                        console.error('Error menambah dosen:', error);
-                        this.showToast('Error menambah dosen: ' + error.message, 'error');
-                    }
-                }
-                
-                // Ekspor data di tab JSON
-                exportJsonTabData() {
-                    jsonDB.exportToFile();
-                    this.showToast('Data berhasil diekspor ke JSON!', 'success');
-                }
-                
-                // Reset data di tab JSON
-                async resetJsonTabData() {
-                    if (confirm('Apakah Anda yakin ingin mereset semua data?')) {
-                        await jsonDB.resetData();
-                        await this.loadJsonTabData(); // Refresh data
-                        this.showToast('Data berhasil direset!', 'success');
-                    }
-                }
-                
-                // Tampilkan tampilan bacaan (reading view)
-                async showReadingView(summaryId) {
-                    const summary = await jsonDB.getSummaryById(summaryId);
-                    if (!summary) {
-                        this.showToast('Ringkasan tidak ditemukan!', 'error');
-                        return;
-                    }
-                    
-                    // Isi konten bacaan
-                    document.getElementById('readingTitle').textContent = summary.topic;
-                    document.getElementById('readingCourse').textContent = summary.courseName;
-                    document.getElementById('readingDate').textContent = this.formatDate(summary.meetingDate);
-                    document.getElementById('readingLecturer').textContent = summary.lecturer;
-                    document.getElementById('readingMeeting').textContent = summary.meetingNumber;
-                    document.getElementById('readingPriority').textContent = this.getPriorityLabel(summary.priority);
-                    document.getElementById('readingBody').innerHTML = summary.summary;
-                    
-                    // Tambahkan tags
-                    const tagsContainer = document.getElementById('readingTags');
-                    tagsContainer.innerHTML = '';
-                    if (summary.tags) {
-                        const tags = summary.tags.split(',').map(tag => tag.trim());
-                        tags.forEach(tag => {
-                            const tagElement = document.createElement('span');
-                            tagElement.className = 'reading-tag';
-                            tagElement.textContent = tag;
-                            tagsContainer.appendChild(tagElement);
-                        });
-                    }
-                    
-                    // Simpan ID ringkasan untuk penggunaan tombol edit dan download
-                    this.currentReadingSummaryId = summaryId;
-                    
-                    // Tampilkan tampilan bacaan
-                    document.getElementById('readingView').classList.add('active');
-                    
-                    // Mencegah scroll pada body
-                    document.body.style.overflow = 'hidden';
-                }
-                
-                // Sembunyikan tampilan bacaan
-                hideReadingView() {
-                    document.getElementById('readingView').classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                }
-                
-                // Edit summary dari tampilan bacaan
-                editSummaryFromReadingView() {
-                    this.hideReadingView();
-                    this.editSummary(this.currentReadingSummaryId);
-                }
-                
-                // Download summary dari tampilan bacaan
-                async downloadSummaryFromReadingView() {
-                    const summary = await jsonDB.getSummaryById(this.currentReadingSummaryId);
-                    if (summary) {
-                        this.downloadSummaryAsMD(summary);
-                    }
-                }
-
-                async deleteSummary(id) {
-                    if (confirm('Hapus ringkasan ini?')) {
-                        await jsonDB.deleteSummary(id);
-                        await this.loadSummaries(); // Refresh data from database
-                        this.displaySummaries();
-                        this.showToast('Ringkasan dihapus!', 'success');
-                    }
-                }
-
-                async displaySummaries(filtered = null) {
-                    const list = document.getElementById('summaryList');
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    const data = filtered || allSummaries;
-                    if (data.length === 0) {
-                        list.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><h3>Belum ada ringkasan</h3></div>';
-                        return;
-                    }
-                    data.sort((a, b) => new Date(b.meetingDate) - new Date(a.meetingDate));
-                    list.innerHTML = data.map(s => `
-                        <div class="summary-item">
-                            <div class="summary-header">
-                                <div class="summary-title">${this.escapeHtml(s.courseName)} - Pertemuan ${s.meetingNumber}</div>
-                                <span class="priority-badge ${s.priority}">${this.getPriorityLabel(s.priority)}</span>
-                            </div>
-                            <div class="summary-meta">
-                                <div class="meta-item"><i class="fas fa-calendar"></i> ${this.formatDate(s.meetingDate)}</div>
-                                <div class="meta-item"><i class="fas fa-chalkboard-teacher"></i> ${this.escapeHtml(s.lecturer)}</div>
-                            </div>
-                            <div class="summary-content"><strong>Topik:</strong> ${this.escapeHtml(s.topic)}<br><br>${s.summary ? (s.summary.length > 100 ? s.summary.substring(0, 100) + '...' : s.summary) : ''}</div>
-                            <div class="tags">${s.tags ? s.tags.split(',').map(t => `<span class="tag">${this.escapeHtml(t.trim())}</span>`).join('') : ''}</div>
-                            <div class="summary-actions">
-                                <button class="btn btn-primary" onclick="app.showReadingView('${s.id}')"><i class="fas fa-book-open"></i> Baca</button>
-                                <button class="btn btn-secondary" onclick="app.editSummary('${s.id}')"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="btn btn-success" onclick="app.downloadSummaryAsMD(${JSON.stringify(s).replace(/"/g, '&quot;')})"><i class="fas fa-download"></i> .md</button>
-                                <button class="btn btn-danger" onclick="app.deleteSummary('${s.id}')"><i class="fas fa-trash"></i> Hapus</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-
-                async filterSummaries() {
-                    const term = document.getElementById('searchInput').value.toLowerCase();
-                    const course = document.getElementById('courseFilter').value;
-                    const prio = document.getElementById('priorityFilter').value;
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    const filtered = allSummaries.filter(s => {
-                        const match = s.courseName.toLowerCase().includes(term) ||
-                                      s.topic.toLowerCase().includes(term) ||
-                                      s.summary.toLowerCase().includes(term) ||
-                                      (s.tags && s.tags.toLowerCase().includes(term));
-                        return match && (!course || s.courseName === course) && (!prio || s.priority === prio);
-                    });
-                    this.displaySummaries(filtered);
-                }
-
-                async loadCoursesFilter() {
-                    const sel = document.getElementById('courseFilter');
-                    sel.innerHTML = '<option value="">Semua Mata Kuliah</option>';
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    [...new Set(allSummaries.map(s => s.courseName))].forEach(c => {
-                        sel.innerHTML += `<option value="${this.escapeHtml(c)}">${this.escapeHtml(c)}</option>`;
-                    });
-                }
-
-                async updateDashboard() {
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    document.getElementById('totalSummaries').textContent = allSummaries.length;
-                    document.getElementById('totalCourses').textContent = new Set(allSummaries.map(s => s.courseName)).size;
-                    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-                    document.getElementById('thisWeekSummaries').textContent = allSummaries.filter(s => new Date(s.createdAt) >= weekAgo).length;
-                    const tags = new Set();
-                    allSummaries.forEach(s => s.tags && s.tags.split(',').forEach(t => tags.add(t.trim())));
-                    document.getElementById('totalTags').textContent = tags.size;
-                    
-                    // Update recent summaries
-                    const recentList = document.getElementById('recentSummariesList');
-                    const recent = allSummaries.slice(0, 5);
-                    if (recent.length === 0) {
-                        recentList.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><h3>Belum ada ringkasan</h3></div>';
-                    } else {
-                        recentList.innerHTML = recent.map(s => `
-                            <div class="summary-item">
-                                <div class="summary-header">
-                                    <div class="summary-title">${this.escapeHtml(s.courseName)} - Pertemuan ${s.meetingNumber}</div>
-                                    <span class="priority-badge ${s.priority}">${this.getPriorityLabel(s.priority)}</span>
-                                </div>
-                                <div class="summary-meta">
-                                    <div class="meta-item"><i class="fas fa-calendar"></i> ${this.formatDate(s.meetingDate)}</div>
-                                    <div class="meta-item"><i class="fas fa-chalkboard-teacher"></i> ${this.escapeHtml(s.lecturer)}</div>
-                                </div>
-                                <div class="summary-content"><strong>Topik:</strong> ${this.escapeHtml(s.topic)}</div>
-                                <div class="tags">${s.tags ? s.tags.split(',').map(t => `<span class="tag">${this.escapeHtml(t.trim())}</span>`).join('') : ''}</div>
-                                <div class="summary-actions">
-                                    <button class="btn btn-primary" onclick="app.showReadingView('${s.id}')"><i class="fas fa-book-open"></i> Baca</button>
-                                    <button class="btn btn-success" onclick="app.downloadSummaryAsMD(${JSON.stringify(s).replace(/"/g, '&quot;')})"><i class="fas fa-download"></i> .md</button>
-                                </div>
-                            </div>
-                        `).join('');
-                    }
-                }
-
-                updateCharCount() {
-                    let content = '';
-                    if ($('#summary').summernote('code')) {
-                        content = $('#summary').summernote('code');
-                    } else {
-                        content = document.getElementById('summary').value;
-                    }
-                    
-                    // Remove HTML tags for character count
-                    const textContent = content.replace(/<[^>]*>/g, '');
-                    const len = textContent.length;
-                    
-                    document.getElementById('charCount').textContent = `${len} karakter`;
-                    const prog = document.getElementById('summaryProgress');
-                    const pct = Math.min((len / 1000) * 100, 100);
-                    prog.style.width = `${pct}%`;
-                    prog.style.background = len < 100 ? '#e74c3c' : len < 500 ? '#f39c12' : '#27ae60';
-                }
-
-                async exportJSON() {
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    const data = JSON.stringify(allSummaries, null, 2);
-                    const url = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `ringkasan-${new Date().toISOString().slice(0,10)}.json`;
-                    a.click();
-                    this.showToast('Ekspor JSON berhasil!', 'success');
-                }
-
-                async exportCSV() {
-                    let csv = 'Mata Kuliah,Pertemuan,Tanggal,Dosen,Topik,Ringkasan,Tags,Prioritas\n';
-                    const allSummaries = await jsonDB.getAllSummaries();
-                    allSummaries.forEach(s => {
-                        // Remove HTML tags and escape quotes for CSV
-                        const plainSummary = s.summary.replace(/<[^>]*>/g, '').replace(/"/g, '""');
-                        csv += `"${s.courseName}",${s.meetingNumber},${s.meetingDate},"${s.lecturer}","${s.topic}","${plainSummary}","${s.tags}",${s.priority}\n`;
-                    });
-                    const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `ringkasan-${new Date().toISOString().slice(0,10)}.csv`;
-                    a.click();
-                    this.showToast('Ekspor CSV berhasil!', 'success');
-                }
-
-                async importData(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = async (ev) => {
-                        try {
-                            const data = JSON.parse(ev.target.result);
-                            if (Array.isArray(data)) {
-                                if (confirm(`Impor ${data.length} ringkasan?`)) {
-                                    // Hapus semua ringkasan lama dan ganti dengan yang baru
-                                    const allData = await jsonDB.loadData();
-                                    allData.summaries = data;
-                                    localStorage.setItem('lectureNotesDB', JSON.stringify(allData));
-                                    
-                                    await this.loadSummaries(); // Refresh data
-                                    this.displaySummaries();
-                                    this.loadCoursesFilter();
-                                    this.showToast('Impor berhasil!', 'success');
-                                }
-                            }
-                        } catch (err) {
-                            alert('Gagal mengimpor: ' + err.message);
-                        }
-                    };
-                    reader.readAsText(file);
-                    e.target.value = '';
-                }
-
-                async clearAllData() {
-                    if (confirm('Hapus SEMUA data?')) {
-                        await jsonDB.resetData();
-                        await this.loadSummaries(); // Refresh data
-                        this.displaySummaries();
-                        this.updateDashboard();
-                        this.showToast('Semua data dihapus!', 'success');
-                    }
-                }
-
-                updateSettings(e) {
-                    const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
-                    settings[e.target.id] = e.target.value;
-                    localStorage.setItem('appSettings', JSON.stringify(settings));
-                    this.showToast('Pengaturan disimpan!', 'success');
-                }
-
-                showToast(msg, type = 'success') {
-                    const t = document.getElementById('toast');
-                    t.textContent = msg;
-                    t.className = `toast show ${type}`;
-                    setTimeout(() => t.classList.remove('show'), 3000);
-                }
-
-                formatDate(dateStr) {
-                    return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-                }
-
-                getPriorityLabel(p) {
-                    return { low: 'Rendah', medium: 'Sedang', high: 'Tinggi' }[p] || 'Sedang';
-                }
+        // Fungsi untuk memuat data dari jsonDB
+        async function loadMaterials() {
+            try {
+                const data = await jsonDB.loadData();
+                allMaterials = data.summaries || [];
+                displayMaterials(allMaterials);
+                populateCourseFilter(data.courses || []);
+            } catch (error) {
+                console.error('Error memuat materi:', error);
+                document.getElementById('materialGrid').innerHTML = '<div class="no-results"><i class="fas fa-exclamation-triangle"></i><h3>Error Memuat Data</h3><p>' + error.message + '</p></div>';
             }
-
-            // Initialize the app
-            const app = new LectureNotesApp();
+        }
+        
+        // Fungsi untuk menampilkan materi
+        function displayMaterials(materials) {
+            const grid = document.getElementById('materialGrid');
+            const noResults = document.getElementById('noResults');
             
-            // Render master lists on first load
-            setTimeout(async () => {
-                await app.renderCourseList();
-                await app.renderLecturerList();
-            }, 100); // Delay kecil untuk memastikan data sudah dimuat
-        </script>
-
-        <!-- JSZip untuk kompresi file -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+            if (materials.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            noResults.classList.add('hidden');
+            
+            grid.innerHTML = materials.map(material => `
+                <div class="material-card" data-id="${material.id}">
+                    <div class="card-header">
+                        <div class="course-title">
+                            <i class="fas fa-book"></i> ${escapeHtml(material.courseName)}
+                        </div>
+                        <div class="meeting-info">
+                            <i class="fas fa-hashtag"></i> Pertemuan ${material.meetingNumber} | 
+                            <i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(material.lecturer)}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="topic">${escapeHtml(material.topic)}</h3>
+                        <div class="meta-info">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i> ${formatDate(material.meetingDate)}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-user-clock"></i> ${escapeHtml(material.lecturer)}
+                            </div>
+                        </div>
+                        <div class="summary-content">
+                            ${material.summary ? stripHtmlTags(material.summary).substring(0, 150) + '...' : ''}
+                        </div>
+                        <div class="tags">
+                            ${material.tags ? material.tags.split(',').map(tag => `
+                                <span class="tag">${escapeHtml(tag.trim())}</span>
+                            `).join('') : ''}
+                        </div>
+                        <div class="priority-badge ${material.priority}">
+                            ${getPriorityLabel(material.priority)}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="date-info">
+                            <i class="fas fa-clock"></i> ${new Date(material.createdAt).toLocaleString()}
+                        </div>
+                        <button class="read-btn" onclick="showReadingView('${material.id}')">
+                            <i class="fas fa-book-open"></i> Baca
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
         
-        <!-- Database JSON -->
-        <script src="jsondb.js"></script>
+        // Fungsi untuk mengisi filter mata kuliah
+        function populateCourseFilter(courses) {
+            const filter = document.getElementById('courseFilter');
+            filter.innerHTML = '<option value="">Semua Mata Kuliah</option>';
+            
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                filter.appendChild(option);
+            });
+        }
         
-        <!-- Custom JavaScript untuk menampilkan data JSON -->
-        <script src="data.js"></script>
+        // Fungsi untuk filter materi
+        function filterMaterials() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const courseFilter = document.getElementById('courseFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            let filtered = allMaterials;
+            
+            // Filter berdasarkan pencarian
+            if (searchTerm) {
+                filtered = filtered.filter(material => 
+                    material.topic.toLowerCase().includes(searchTerm) ||
+                    material.courseName.toLowerCase().includes(searchTerm) ||
+                    material.lecturer.toLowerCase().includes(searchTerm) ||
+                    (material.tags && material.tags.toLowerCase().includes(searchTerm)) ||
+                    (material.summary && material.summary.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Filter berdasarkan mata kuliah
+            if (courseFilter) {
+                filtered = filtered.filter(material => material.courseName === courseFilter);
+            }
+            
+            // Filter berdasarkan prioritas
+            if (priorityFilter) {
+                filtered = filtered.filter(material => material.priority === priorityFilter);
+            }
+            
+            // Filter berdasarkan tanggal
+            if (dateFilter) {
+                const now = new Date();
+                filtered = filtered.filter(material => {
+                    const materialDate = new Date(material.meetingDate);
+                    
+                    switch(dateFilter) {
+                        case 'today':
+                            return materialDate.toDateString() === now.toDateString();
+                        case 'this-week':
+                            const oneWeekAgo = new Date(now);
+                            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                            return materialDate >= oneWeekAgo && materialDate <= now;
+                        case 'this-month':
+                            return materialDate.getMonth() === now.getMonth() && 
+                                   materialDate.getFullYear() === now.getFullYear();
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            displayMaterials(filtered);
+        }
+        
+        // Event listeners untuk filter
+        document.getElementById('searchInput').addEventListener('input', filterMaterials);
+        document.getElementById('courseFilter').addEventListener('change', filterMaterials);
+        document.getElementById('priorityFilter').addEventListener('change', filterMaterials);
+        document.getElementById('dateFilter').addEventListener('change', filterMaterials);
+        
+        // Fungsi untuk menampilkan tampilan bacaan
+        function showReadingView(materialId) {
+            const material = allMaterials.find(m => m.id === materialId);
+            if (!material) return;
+            
+            currentMaterial = material;
+            
+            // Isi konten bacaan
+            document.getElementById('readingTitle').textContent = material.topic;
+            document.getElementById('readingCourse').textContent = material.courseName;
+            document.getElementById('readingDate').textContent = formatDate(material.meetingDate);
+            document.getElementById('readingLecturer').textContent = material.lecturer;
+            document.getElementById('readingMeeting').textContent = material.meetingNumber;
+            document.getElementById('readingPriority').textContent = getPriorityLabel(material.priority);
+            document.getElementById('readingBody').innerHTML = material.summary; // Biarkan HTML dirender di tampilan bacaan
+            
+            // Tambahkan tags
+            const tagsContainer = document.getElementById('readingTags');
+            tagsContainer.innerHTML = '';
+            if (material.tags) {
+                const tags = material.tags.split(',').map(tag => tag.trim());
+                tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'reading-tag';
+                    tagElement.textContent = tag;
+                    tagsContainer.appendChild(tagElement);
+                });
+            }
+            
+            // Tampilkan tampilan bacaan
+            document.getElementById('readingView').classList.add('active');
+            
+            // Mencegah scroll pada body
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Fungsi untuk menyembunyikan tampilan bacaan
+        function hideReadingView() {
+            document.getElementById('readingView').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Fungsi untuk mengunduh materi
+        function downloadMaterial() {
+            if (!currentMaterial) return;
+            
+            // Membuat konten markdown
+            const date = new Date(currentMaterial.meetingDate).toLocaleDateString('id-ID');
+            let markdown = `# ${currentMaterial.courseName} - Pertemuan ${currentMaterial.meetingNumber}\n\n`;
+            markdown += `**Topik:** ${currentMaterial.topic}\n\n`;
+            markdown += `**Tanggal:** ${date}\n\n`;
+            markdown += `**Dosen:** ${currentMaterial.lecturer}\n\n`;
+            markdown += `**Prioritas:** ${getPriorityLabel(currentMaterial.priority)}\n\n`;
+            
+            if (currentMaterial.tags) {
+                markdown += `**Tags:** ${currentMaterial.tags}\n\n`;
+            }
+            
+            markdown += `---\n\n`;
+            // Konversi HTML ke plain text untuk format markdown
+            markdown += `${stripHtmlTags(currentMaterial.summary)}\n\n`;
+            markdown += `---\n\n`;
+            markdown += `*Dibuat pada: ${new Date(currentMaterial.createdAt).toLocaleString('id-ID')}*\n`;
+            markdown += `*Terakhir diupdate: ${new Date(currentMaterial.updatedAt).toLocaleString('id-ID')}*\n`;
+            
+            // Membuat file dan mengunduh
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const filename = generateFilename(currentMaterial.topic) + '.md';
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Fungsi untuk generate filename
+        function generateFilename(topic) {
+            return topic
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '_')
+                .substring(0, 50);
+        }
+        
+        // Fungsi untuk format tanggal
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('id-ID', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+        
+        // Fungsi untuk label prioritas
+        function getPriorityLabel(priority) {
+            const labels = { low: 'Rendah', medium: 'Sedang', high: 'Tinggi' };
+            return labels[priority] || 'Sedang';
+        }
+        
+        // Fungsi untuk escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Fungsi untuk menghapus tag HTML
+        function stripHtmlTags(html) {
+            const temporalDivElement = document.createElement('div');
+            temporalDivElement.innerHTML = html;
+            return temporalDivElement.textContent || temporalDivElement.innerText || '';
+        }
+        
+        // Event listeners untuk tampilan bacaan
+        document.getElementById('closeReadingView').addEventListener('click', hideReadingView);
+        document.getElementById('downloadReadingSummary').addEventListener('click', downloadMaterial);
+        
+        // Cek apakah pengguna mengklik area di luar konten bacaan untuk menutup modal
+        document.getElementById('readingView').addEventListener('click', (e) => {
+            if (e.target.id === 'readingView') {
+                hideReadingView();
+            }
+        });
+        
+        // Muat data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadMaterials);
+    </script>
 </body>
 </html>
