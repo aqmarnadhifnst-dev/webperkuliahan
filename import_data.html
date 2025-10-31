@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Data Aplikasi Catatan Perkuliahan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0d6efd;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #0d6efd;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: monospace;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Import Data ke Aplikasi Catatan Perkuliahan</h1>
+        
+        <div class="instructions">
+            <h5>Petunjuk Penggunaan:</h5>
+            <ol>
+                <li>Salin isi dari file <code>lecture_notes_db.json</code> Anda</li>
+                <li>Tempelkan di kotak teks di bawah ini</li>
+                <li>Klik tombol "Konversi & Simpan Data" untuk menyimpan ke localStorage</li>
+                <li>Buka <a href="./index.html">aplikasi utama</a> untuk melihat data yang telah diimpor</li>
+            </ol>
+            <p><strong>Catatan:</strong> Data akan disimpan secara lokal di browser Anda.</p>
+        </div>
+        
+        <div class="mb-3">
+            <label for="jsonData" class="form-label fw-bold">Data JSON:</label>
+            <textarea id="jsonData" class="form-control" placeholder='Paste data JSON Anda di sini, contoh: {"summaries": [...], "courses": [...], "lecturers": [...]}'>
+{
+  "summaries": [
+    {
+      "id": "1761028174503",
+      "courseName": "kalkulus",
+      "meetingNumber": 2,
+      "meetingDate": "2025-10-21",
+      "lecturer": "Israq Maharani, M.Pd.",
+      "topic": "Bentuk bilangan",
+      "summary": "<p>Berikut ini bentuk bilang</p><p><br></p><p>1. bilanagn</p><p>2. betuk</p><p><br></p><p style=\\"text-align: justify; \\"></p>",
+      "tags": "kalkulus",
+      "priority": "high",
+      "updatedAt": "2025-10-22T03:14:35.206Z"
+    },
+    {
+      "id": "1761620897655",
+      "courseName": "Metode Penelitian Kualitatif",
+      "meetingNumber": 3,
+      "meetingDate": "2025-10-25",
+      "lecturer": "Minta Ito Simamora, M.Pd",
+      "topic": "Tugas",
+      "summary": "<p>Ringkasan tentang Asumsi dalam Penelitian Kualitatif</p><p>Deadline Rabu, 29 Oktober 2025 pukul 23.59</p><p>Di kumpul Via google Drive</p>",
+      "tags": "",
+      "priority": "high",
+      "createdAt": "2025-10-28T03:08:17.655Z",
+      "updatedAt": "2025-10-28T03:08:17.655Z"
+    }
+  ],
+  "courses": [
+    "Teori Belajar dan Kemampuan Matematika",
+    "Etnomatematika",
+    "Bahasa Inggris",
+    "Analisa Kompleks",
+    "Kalkulus Diferensial",
+    "Bahasa Indonesia",
+    "Islam dan Pendidikan",
+    "Metode Penelitian Kualitatif",
+    "Statistika Dasar",
+    "Pancasila dan Kearganegaraan",
+    "Pendidikan Agama"
+  ],
+  "lecturers": [
+    "Israq Maharani, M.Pd.",
+    "Nur Rahmi Rizqi, S.Pd., M.Pd.",
+    "Syafrina Prihatini, S.Pd., H.Hum",
+    "Jihan Hidayah Putri, M.Pd",
+    "Andi Syahputra Harahap, M.Pd",
+    "Yenni Novita Harahap, M.Pd",
+    "Dr. Mesran, M.Pd.I",
+    "Minta Ito Simamora, M.Pd",
+    "Risna Mira Bella Saragih, M.Pd",
+    "Suhbudi, S.H.,MH.,M.AP",
+    "Khairul Anwar, S.Pd.I, M.Pd"
+  ]
+}
+            </textarea>
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn btn-primary" onclick="convertAndSaveData()">Konversi & Simpan Data</button>
+            <button class="btn btn-secondary" onclick="loadSampleData()">Muat Data Contoh</button>
+            <a href="./index.html" class="btn btn-success">Buka Aplikasi</a>
+        </div>
+        
+        <div id="statusMessage" class="status"></div>
+    </div>
+
+    <script>
+        function convertAndSaveData() {
+            const jsonData = document.getElementById('jsonData').value.trim();
+            if (!jsonData) {
+                showStatus('Silakan masukkan data JSON terlebih dahulu.', 'error');
+                return;
+            }
+            
+            try {
+                // Parse the JSON data
+                const parsedData = JSON.parse(jsonData);
+                
+                // Validate the data structure
+                if (!parsedData.summaries || !parsedData.courses || !parsedData.lecturers) {
+                    showStatus('Format data tidak valid. Harus memiliki summaries, courses, dan lecturers.', 'error');
+                    return;
+                }
+                
+                // Convert the data to the new format
+                const convertedData = convertToNewFormat(parsedData);
+                
+                // Save to localStorage using the app's data key
+                localStorage.setItem('lectureNotesData', JSON.stringify(convertedData));
+                
+                showStatus('Data berhasil dikonversi dan disimpan ke localStorage! Silakan buka aplikasi utama.', 'success');
+                
+            } catch (e) {
+                showStatus('Error: Format JSON tidak valid. Silakan periksa kembali data Anda. ' + e.message, 'error');
+                console.error(e);
+            }
+        }
+        
+        function convertToNewFormat(oldData) {
+            // Create mapping for courses and lecturers to convert string values to IDs
+            const courseMap = new Map();
+            const lecturerMap = new Map();
+            
+            // Convert courses array of strings to objects with IDs
+            const courses = oldData.courses.map((course, index) => {
+                const courseObj = { id: index + 1, name: course };
+                courseMap.set(course, courseObj.id);
+                return courseObj;
+            });
+            
+            // Convert lecturers array of strings to objects with IDs
+            const lecturers = oldData.lecturers.map((lecturer, index) => {
+                const lecturerObj = { id: index + 1, name: lecturer };
+                lecturerMap.set(lecturer, lecturerObj.id);
+                return lecturerObj;
+            });
+            
+            // Convert summaries to new format
+            const summaries = oldData.summaries.map(summary => {
+                // Convert priority from old format ('high', 'medium', 'low') to new format ('tinggi', 'sedang', 'rendah')
+                let priority = 'sedang'; // default
+                if (summary.priority === 'high') priority = 'tinggi';
+                if (summary.priority === 'medium') priority = 'sedang';
+                if (summary.priority === 'low') priority = 'rendah';
+                
+                // Convert tags from string to array
+                const tags = summary.tags ? summary.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+                
+                // Handle the ID conversion - if it's a string that represents a number, convert it
+                let newId;
+                if (summary.id && !isNaN(summary.id)) {
+                    newId = parseInt(summary.id);
+                } else {
+                    // If it's not a number, create a numeric ID based on the string
+                    newId = Math.abs(summary.id.toString().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0));
+                }
+                
+                return {
+                    id: newId,
+                    courseId: courseMap.get(summary.courseName) || 0, // Use mapped ID or 0 if not found
+                    meetingNumber: summary.meetingNumber || 1,
+                    date: summary.meetingDate || summary.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0], // Try meetingDate first, then createdAt date, then today
+                    lecturerId: lecturerMap.get(summary.lecturer) || 0, // Use mapped ID or 0 if not found
+                    topic: summary.topic,
+                    content: summary.summary || summary.content || '', // Use summary field from old format
+                    tags: tags.length > 0 ? tags : [], // Use converted tags array
+                    priority: priority
+                };
+            });
+            
+            return {
+                summaries: summaries,
+                courses: courses,
+                lecturers: lecturers
+            };
+        }
+        
+        function loadSampleData() {
+            // Load the sample data into the text area
+            const sampleData = {
+  "summaries": [
+    {
+      "id": "1761028174503",
+      "courseName": "kalkulus",
+      "meetingNumber": 2,
+      "meetingDate": "2025-10-21",
+      "lecturer": "Israq Maharani, M.Pd.",
+      "topic": "Bentuk bilangan",
+      "summary": "<p>Berikut ini bentuk bilang</p><p><br></p><p>1. bilanagn</p><p>2. betuk</p><p><br></p><p style=\\"text-align: justify; \\"></p>",
+      "tags": "kalkulus",
+      "priority": "high",
+      "updatedAt": "2025-10-22T03:14:35.206Z"
+    },
+    {
+      "id": "1761620897655",
+      "courseName": "Metode Penelitian Kualitatif",
+      "meetingNumber": 3,
+      "meetingDate": "2025-10-25",
+      "lecturer": "Minta Ito Simamora, M.Pd",
+      "topic": "Tugas",
+      "summary": "<p>Ringkasan tentang Asumsi dalam Penelitian Kualitatif</p><p>Deadline Rabu, 29 Oktober 2025 pukul 23.59</p><p>Di kumpul Via google Drive</p>",
+      "tags": "",
+      "priority": "high",
+      "createdAt": "2025-10-28T03:08:17.655Z",
+      "updatedAt": "2025-10-28T03:08:17.655Z"
+    }
+  ],
+  "courses": [
+    "Teori Belajar dan Kemampuan Matematika",
+    "Etnomatematika",
+    "Bahasa Inggris",
+    "Analisa Kompleks",
+    "Kalkulus Diferensial",
+    "Bahasa Indonesia",
+    "Islam dan Pendidikan",
+    "Metode Penelitian Kualitatif",
+    "Statistika Dasar",
+    "Pancasila dan Kearganegaraan",
+    "Pendidikan Agama"
+  ],
+  "lecturers": [
+    "Israq Maharani, M.Pd.",
+    "Nur Rahmi Rizqi, S.Pd., M.Pd.",
+    "Syafrina Prihatini, S.Pd., H.Hum",
+    "Jihan Hidayah Putri, M.Pd",
+    "Andi Syahputra Harahap, M.Pd",
+    "Yenni Novita Harahap, M.Pd",
+    "Dr. Mesran, M.Pd.I",
+    "Minta Ito Simamora, M.Pd",
+    "Risna Mira Bella Saragih, M.Pd",
+    "Suhbudi, S.H.,MH.,M.AP",
+    "Khairul Anwar, S.Pd.I, M.Pd"
+  ]
+};
+            document.getElementById('jsonData').value = JSON.stringify(sampleData, null, 2);
+            showStatus('Data contoh berhasil dimuat.', 'success');
+        }
+        
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = 'status ' + type;
+        }
+    </script>
+</body>
+</html>
