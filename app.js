@@ -265,7 +265,7 @@ class Database {
       }
       return false;
     } catch (e) {
-      console.error('Error importing data:', e);
+      console.error('Error importing ', e);
       return false;
     }
   }
@@ -606,4 +606,149 @@ class App {
 
   showAddCourseModal() {
     $('#courseId').val('');
-    $('#cour
+    $('#courseName').val('');
+    $('#courseModal').modal('show');
+  }
+
+  saveCourse() {
+    const name = $('#courseName').val().trim();
+    if (!name) {
+      alert('Nama mata kuliah tidak boleh kosong.');
+      return;
+    }
+    this.db.addCourse({ name });
+    this.loadCourses();
+    this.updateFilterOptions();
+    $('#courseModal').modal('hide');
+  }
+
+  deleteCourse(id) {
+    if (confirm('Hapus mata kuliah ini? Semua ringkasan terkait juga akan dihapus.')) {
+      this.db.deleteCourse(id);
+      this.loadCourses();
+      this.loadSummaries();
+      this.updateFilterOptions();
+    }
+  }
+
+  showAddLecturerModal() {
+    $('#lecturerId').val('');
+    $('#lecturerName').val('');
+    $('#lecturerModal').modal('show');
+  }
+
+  saveLecturer() {
+    const name = $('#lecturerName').val().trim();
+    if (!name) {
+      alert('Nama dosen tidak boleh kosong.');
+      return;
+    }
+    this.db.addLecturer({ name });
+    this.loadLecturers();
+    this.updateFilterOptions();
+    $('#lecturerModal').modal('hide');
+  }
+
+  deleteLecturer(id) {
+    if (confirm('Hapus dosen ini? Semua ringkasan terkait juga akan dihapus.')) {
+      this.db.deleteLecturer(id);
+      this.loadLecturers();
+      this.loadSummaries();
+      this.updateFilterOptions();
+    }
+  }
+
+  deleteCurrentSummary() {
+    if (!this.currentViewSummary) return;
+    if (confirm('Hapus ringkasan ini?')) {
+      this.db.deleteSummary(this.currentViewSummary.id);
+      this.loadSummaries();
+      this.updateFilterOptions();
+      $('#viewSummaryModal').modal('hide');
+    }
+  }
+
+  exportCurrentSummary() {
+    if (!this.currentViewSummary) return;
+    const summary = this.currentViewSummary;
+    const course = this.db.getCourseById(summary.courseId);
+    const lecturer = this.db.getLecturerById(summary.lecturerId);
+
+    let markdown = `# ${summary.topic}\n\n`;
+    markdown += `**Mata Kuliah**: ${course?.name || 'N/A'}\n\n`;
+    markdown += `**Dosen**: ${lecturer?.name || 'N/A'}\n\n`;
+    markdown += `**Pertemuan**: ${summary.meetingNumber}\n\n`;
+    markdown += `**Tanggal**: ${summary.date}\n\n`;
+    markdown += `**Prioritas**: ${this.getPriorityLabel(summary.priority)}\n\n`;
+    if (summary.tags?.length > 0) {
+      markdown += `**Tags**: ${summary.tags.join(', ')}\n\n`;
+    }
+    markdown += `## Ringkasan\n\n${summary.content.replace(/<[^>]*>/g, '')}\n`;
+
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${summary.topic.replace(/\s+/g, '_')}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  exportAllData() {
+    const dataStr = this.db.exportData();
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lecture_notes_data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  showImportModal() {
+    $('#importFile').val('');
+    $('#importModal').modal('show');
+  }
+
+  importData() {
+    const fileInput = $('#importFile')[0];
+    if (!fileInput.files.length) {
+      alert('Pilih file JSON terlebih dahulu.');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = this.db.importData(e.target.result);
+      if (result) {
+        this.loadCourses();
+        this.loadLecturers();
+        this.loadSummaries();
+        this.updateFilterOptions();
+        alert('Data berhasil diimpor!');
+        $('#importModal').modal('hide');
+      } else {
+        alert('Gagal mengimpor data. Pastikan file berformat JSON yang valid.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  resetData() {
+    if (confirm('Reset semua data ke kondisi awal? Tindakan ini tidak bisa dibatalkan.')) {
+      this.db.resetData();
+      this.loadCourses();
+      this.loadLecturers();
+      this.loadSummaries();
+      this.updateFilterOptions();
+    }
+  }
+}
+
+// Jalankan aplikasi
+new App();
