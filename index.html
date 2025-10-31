@@ -3,799 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kumpulan Materi - Smart Lecture Notes</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        h1 {
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .search-container {
-            max-width: 600px;
-            margin: 20px auto;
-            position: relative;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-
-        .filters {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .filter-select {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: white;
-        }
-
-        .material-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .material-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .material-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-header {
-            padding: 20px;
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .course-title {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .meeting-info {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .card-body {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topic {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-        }
-
-        .meta-info {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .summary-content {
-            flex-grow: 1;
-            margin-bottom: 15px;
-            line-height: 1.6;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .tag {
-            background: #e8f4fd;
-            color: var(--primary-color);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        .priority-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            align-self: flex-start;
-        }
-
-        .priority-badge.high {
-            background: #ffeaea;
-            color: var(--danger-color);
-        }
-
-        .priority-badge.medium {
-            background: #fff4e5;
-            color: var(--warning-color);
-        }
-
-        .priority-badge.low {
-            background: #e8f4fd;
-            color: var(--primary-color);
-        }
-
-        .card-footer {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .read-btn {
-            padding: 8px 15px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: background 0.3s;
-        }
-
-        .read-btn:hover {
-            background: #2980b9;
-        }
-
-        .date-info {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 50px 20px;
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .no-results i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #ccc;
-        }
-
-        .reading-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .reading-view.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .reading-content {
-            background: white;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 10px;
-            padding: 30px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .reading-view.active .reading-content {
-            transform: scale(1);
-        }
-
-        .reading-header {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .reading-title {
-            font-size: 1.8rem;
-            color: var(--secondary-color);
-            margin: 0 0 10px 0;
-        }
-
-        .reading-meta {
-            display: flex;
-            gap: 20px;
-            color: #666;
-            font-size: 0.9rem;
-            flex-wrap: wrap;
-        }
-
-        .reading-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .reading-body {
-            line-height: 1.8;
-            color: #333;
-        }
-
-        .reading-body h1, 
-        .reading-body h2, 
-        .reading-body h3 {
-            color: var(--secondary-color);
-            margin-top: 1.5em;
-            margin-bottom: 0.8em;
-        }
-
-        .reading-body p {
-            margin-bottom: 1em;
-        }
-
-        .reading-tags {
-            margin: 15px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .reading-tag {
-            background: #e8f4fd;
-            color: var(--primary-color);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        .reading-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1rem;
-        }
-
-        .reading-actions {
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .reading-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .reading-btn-download {
-            background: var(--success-color);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .material-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .filter-select {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .reading-content {
-                width: 95%;
-                padding: 15px;
-            }
-            
-            .reading-header {
-                text-align: center;
-            }
-            
-            .reading-meta {
-                justify-content: center;
-            }
-        }
-    </style>
+    <title>Aplikasi Catatan Perkuliahan</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-book-open"></i> Kumpulan Materi Perkuliahan</h1>
-            <p>Temukan dan baca semua ringkasan materi yang telah dibuat</p>
-            
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-box" id="searchInput" placeholder="Cari materi berdasarkan topik, mata kuliah, atau dosen...">
-            </div>
-            
-            <div class="filters">
-                <select class="filter-select" id="courseFilter">
-                    <option value="">Semua Mata Kuliah</option>
-                </select>
-                <select class="filter-select" id="priorityFilter">
-                    <option value="">Semua Prioritas</option>
-                    <option value="high">Tinggi</option>
-                    <option value="medium">Sedang</option>
-                    <option value="low">Rendah</option>
-                </select>
-                <select class="filter-select" id="dateFilter">
-                    <option value="">Semua Tanggal</option>
-                    <option value="today">Hari Ini</option>
-                    <option value="this-week">Minggu Ini</option>
-                    <option value="this-month">Bulan Ini</option>
-                </select>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="bg-primary text-white p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-book-open me-2"></i>Aplikasi Catatan Perkuliahan</h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light" id="exportAllBtn"><i class="fas fa-file-export me-1"></i>Ekspor Semua</button>
+                    <button class="btn btn-light" id="importBtn"><i class="fas fa-file-import me-1"></i>Impor Data</button>
+                    <button class="btn btn-light" id="resetBtn"><i class="fas fa-redo me-1"></i>Reset Data</button>
+                </div>
             </div>
         </header>
-        
-        <div class="material-grid" id="materialGrid">
-            <!-- Material cards will be inserted here by JavaScript -->
-        </div>
-        
-        <div class="no-results hidden" id="noResults">
-            <i class="fas fa-search"></i>
-            <h3>Materi Tidak Ditemukan</h3>
-            <p>Coba gunakan kata kunci atau filter yang berbeda</p>
+
+        <div class="row">
+            <!-- Sidebar for filters and management -->
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label">Cari</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Cari topik, mata kuliah...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="courseFilter" class="form-label">Mata Kuliah</label>
+                            <select class="form-select" id="courseFilter">
+                                <option value="">Semua Mata Kuliah</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="priorityFilter" class="form-label">Prioritas</label>
+                            <select class="form-select" id="priorityFilter">
+                                <option value="">Semua Prioritas</option>
+                                <option value="rendah">Rendah</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="tinggi">Tinggi</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="dateFilter" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="dateFilter">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tagFilter" class="form-label">Tag</label>
+                            <select class="form-select" id="tagFilter">
+                                <option value="">Semua Tag</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-book me-2"></i>Mata Kuliah</h5>
+                        <button class="btn btn-sm btn-primary" id="addCourseBtn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div id="coursesList"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>Dosen</h5>
+                        <button class="btn btn-sm btn-primary" id="addLecturerBtn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div id="lecturersList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main content area -->
+            <div class="col-md-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Ringkasan Materi</h3>
+                    <button class="btn btn-primary" id="addSummaryBtn"><i class="fas fa-plus me-1"></i>Tambah Ringkasan</button>
+                </div>
+                
+                <!-- Summaries grid -->
+                <div id="summariesGrid" class="row">
+                    <!-- Summaries will be populated here -->
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- Reading View Modal -->
-    <div class="reading-view" id="readingView">
-        <div class="reading-content">
-            <button class="reading-close" id="closeReadingView">&times;</button>
-            <div class="reading-header">
-                <h1 class="reading-title" id="readingTitle">Judul Materi</h1>
-                <div class="reading-meta">
-                    <div class="reading-meta-item">
-                        <i class="fas fa-book"></i>
-                        <span id="readingCourse">Mata Kuliah</span>
-                    </div>
-                    <div class="reading-meta-item">
-                        <i class="fas fa-calendar"></i>
-                        <span id="readingDate">Tanggal</span>
-                    </div>
-                    <div class="reading-meta-item">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <span id="readingLecturer">Dosen</span>
-                    </div>
-                    <div class="reading-meta-item">
-                        <i class="fas fa-hashtag"></i>
-                        <span>Pertemuan <span id="readingMeeting">1</span></span>
-                    </div>
-                    <div class="reading-meta-item">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span id="readingPriority">Prioritas</span>
-                    </div>
+    <!-- Modal for adding/editing summaries -->
+    <div class="modal fade" id="summaryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="summaryModalTitle">Tambah Ringkasan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="reading-tags" id="readingTags">
-                    <!-- Tags will be inserted here -->
+                <div class="modal-body">
+                    <form id="summaryForm">
+                        <input type="hidden" id="summaryId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="courseSelect" class="form-label">Mata Kuliah</label>
+                                    <select class="form-select" id="courseSelect" required>
+                                        <option value="">Pilih Mata Kuliah</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="meetingNumber" class="form-label">Pertemuan Ke-</label>
+                                    <input type="number" class="form-control" id="meetingNumber" min="1" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Tanggal</label>
+                                    <input type="date" class="form-control" id="date" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="lecturerSelect" class="form-label">Dosen</label>
+                                    <select class="form-select" id="lecturerSelect" required>
+                                        <option value="">Pilih Dosen</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="topic" class="form-label">Topik</label>
+                                    <input type="text" class="form-control" id="topic" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="prioritySelect" class="form-label">Prioritas</label>
+                                    <select class="form-select" id="prioritySelect">
+                                        <option value="rendah">Rendah</option>
+                                        <option value="sedang" selected>Sedang</option>
+                                        <option value="tinggi">Tinggi</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="tagsInput" class="form-label">Tags (dipisahkan koma)</label>
+                                    <input type="text" class="form-control" id="tagsInput" placeholder="contoh: algoritma, python, OOP">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="summaryContent" class="form-label">Ringkasan</label>
+                                    <textarea class="form-control" id="summaryContent" rows="10"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveSummaryBtn">Simpan</button>
                 </div>
             </div>
-            <div class="reading-body" id="readingBody">
-                <!-- Content will be inserted here -->
+        </div>
+    </div>
+    
+    <!-- Modal for viewing summary details -->
+    <div class="modal fade" id="viewSummaryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewSummaryModalTitle">Detail Ringkasan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Mata Kuliah:</strong> <span id="viewCourse"></span></p>
+                            <p><strong>Pertemuan Ke-</strong> <span id="viewMeetingNumber"></span></p>
+                            <p><strong>Tanggal:</strong> <span id="viewDate"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Dosen:</strong> <span id="viewLecturer"></span></p>
+                            <p><strong>Topik:</strong> <span id="viewTopic"></span></p>
+                            <p><strong>Prioritas:</strong> <span id="viewPriority"></span></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Tags:</strong> <span id="viewTags"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Ringkasan:</strong></p>
+                        <div id="viewContent" class="border p-3 bg-light"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="exportSummaryBtn"><i class="fas fa-file-export me-1"></i>Ekspor ke Markdown</button>
+                    <button type="button" class="btn btn-primary" id="editSummaryBtn"><i class="fas fa-edit me-1"></i>Edit</button>
+                    <button type="button" class="btn btn-danger" id="deleteSummaryBtn"><i class="fas fa-trash me-1"></i>Hapus</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
-            <div class="reading-actions">
-                <button class="reading-btn reading-btn-download" id="downloadReadingSummary">
-                    <i class="fas fa-download"></i> Download .md
-                </button>
+        </div>
+    </div>
+    
+    <!-- Modal for adding course -->
+    <div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Mata Kuliah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="courseForm">
+                        <input type="hidden" id="courseId">
+                        <div class="mb-3">
+                            <label for="courseName" class="form-label">Nama Mata Kuliah</label>
+                            <input type="text" class="form-control" id="courseName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveCourseBtn">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for adding lecturer -->
+    <div class="modal fade" id="lecturerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Dosen Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="lecturerForm">
+                        <input type="hidden" id="lecturerId">
+                        <div class="mb-3">
+                            <label for="lecturerName" class="form-label">Nama Dosen</label>
+                            <input type="text" class="form-control" id="lecturerName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveLecturerBtn">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Impor Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">Pilih file JSON</label>
+                        <input type="file" class="form-control" id="importFile" accept=".json">
+                        <div class="form-text">
+                            Anda juga dapat menggunakan halaman <a href="import_data.html" target="_blank">import_data.html</a> untuk mengimpor data dari file lecture_notes_db.json Anda.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmImportBtn">Impor</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Sistem database JSON -->
-    <script src="jsondb.js"></script>
-    
-    <script>
-        // Data akan dimuat dari jsonDB
-        let allMaterials = [];
-        let currentMaterial = null;
-        
-        // Fungsi untuk memuat data dari jsonDB
-        async function loadMaterials() {
-            try {
-                const data = await jsonDB.loadData();
-                allMaterials = data.summaries || [];
-                displayMaterials(allMaterials);
-                populateCourseFilter(data.courses || []);
-            } catch (error) {
-                console.error('Error memuat materi:', error);
-                document.getElementById('materialGrid').innerHTML = '<div class="no-results"><i class="fas fa-exclamation-triangle"></i><h3>Error Memuat Data</h3><p>' + error.message + '</p></div>';
-            }
-        }
-        
-        // Fungsi untuk menampilkan materi
-        function displayMaterials(materials) {
-            const grid = document.getElementById('materialGrid');
-            const noResults = document.getElementById('noResults');
-            
-            if (materials.length === 0) {
-                grid.innerHTML = '';
-                noResults.classList.remove('hidden');
-                return;
-            }
-            
-            noResults.classList.add('hidden');
-            
-            grid.innerHTML = materials.map(material => `
-                <div class="material-card" data-id="${material.id}">
-                    <div class="card-header">
-                        <div class="course-title">
-                            <i class="fas fa-book"></i> ${escapeHtml(material.courseName)}
-                        </div>
-                        <div class="meeting-info">
-                            <i class="fas fa-hashtag"></i> Pertemuan ${material.meetingNumber} | 
-                            <i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(material.lecturer)}
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="topic">${escapeHtml(material.topic)}</h3>
-                        <div class="meta-info">
-                            <div class="meta-item">
-                                <i class="fas fa-calendar"></i> ${formatDate(material.meetingDate)}
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-user-clock"></i> ${escapeHtml(material.lecturer)}
-                            </div>
-                        </div>
-                        <div class="summary-content">
-                            ${material.summary ? stripHtmlTags(material.summary).substring(0, 150) + '...' : ''}
-                        </div>
-                        <div class="tags">
-                            ${material.tags ? material.tags.split(',').map(tag => `
-                                <span class="tag">${escapeHtml(tag.trim())}</span>
-                            `).join('') : ''}
-                        </div>
-                        <div class="priority-badge ${material.priority}">
-                            ${getPriorityLabel(material.priority)}
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="date-info">
-                            <i class="fas fa-clock"></i> ${new Date(material.createdAt).toLocaleString()}
-                        </div>
-                        <button class="read-btn" onclick="showReadingView('${material.id}')">
-                            <i class="fas fa-book-open"></i> Baca
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // Fungsi untuk mengisi filter mata kuliah
-        function populateCourseFilter(courses) {
-            const filter = document.getElementById('courseFilter');
-            filter.innerHTML = '<option value="">Semua Mata Kuliah</option>';
-            
-            courses.forEach(course => {
-                const option = document.createElement('option');
-                option.value = course;
-                option.textContent = course;
-                filter.appendChild(option);
-            });
-        }
-        
-        // Fungsi untuk filter materi
-        function filterMaterials() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const courseFilter = document.getElementById('courseFilter').value;
-            const priorityFilter = document.getElementById('priorityFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-            
-            let filtered = allMaterials;
-            
-            // Filter berdasarkan pencarian
-            if (searchTerm) {
-                filtered = filtered.filter(material => 
-                    material.topic.toLowerCase().includes(searchTerm) ||
-                    material.courseName.toLowerCase().includes(searchTerm) ||
-                    material.lecturer.toLowerCase().includes(searchTerm) ||
-                    (material.tags && material.tags.toLowerCase().includes(searchTerm)) ||
-                    (material.summary && material.summary.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            // Filter berdasarkan mata kuliah
-            if (courseFilter) {
-                filtered = filtered.filter(material => material.courseName === courseFilter);
-            }
-            
-            // Filter berdasarkan prioritas
-            if (priorityFilter) {
-                filtered = filtered.filter(material => material.priority === priorityFilter);
-            }
-            
-            // Filter berdasarkan tanggal
-            if (dateFilter) {
-                const now = new Date();
-                filtered = filtered.filter(material => {
-                    const materialDate = new Date(material.meetingDate);
-                    
-                    switch(dateFilter) {
-                        case 'today':
-                            return materialDate.toDateString() === now.toDateString();
-                        case 'this-week':
-                            const oneWeekAgo = new Date(now);
-                            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                            return materialDate >= oneWeekAgo && materialDate <= now;
-                        case 'this-month':
-                            return materialDate.getMonth() === now.getMonth() && 
-                                   materialDate.getFullYear() === now.getFullYear();
-                        default:
-                            return true;
-                    }
-                });
-            }
-            
-            displayMaterials(filtered);
-        }
-        
-        // Event listeners untuk filter
-        document.getElementById('searchInput').addEventListener('input', filterMaterials);
-        document.getElementById('courseFilter').addEventListener('change', filterMaterials);
-        document.getElementById('priorityFilter').addEventListener('change', filterMaterials);
-        document.getElementById('dateFilter').addEventListener('change', filterMaterials);
-        
-        // Fungsi untuk menampilkan tampilan bacaan
-        function showReadingView(materialId) {
-            const material = allMaterials.find(m => m.id === materialId);
-            if (!material) return;
-            
-            currentMaterial = material;
-            
-            // Isi konten bacaan
-            document.getElementById('readingTitle').textContent = material.topic;
-            document.getElementById('readingCourse').textContent = material.courseName;
-            document.getElementById('readingDate').textContent = formatDate(material.meetingDate);
-            document.getElementById('readingLecturer').textContent = material.lecturer;
-            document.getElementById('readingMeeting').textContent = material.meetingNumber;
-            document.getElementById('readingPriority').textContent = getPriorityLabel(material.priority);
-            document.getElementById('readingBody').innerHTML = material.summary; // Biarkan HTML dirender di tampilan bacaan
-            
-            // Tambahkan tags
-            const tagsContainer = document.getElementById('readingTags');
-            tagsContainer.innerHTML = '';
-            if (material.tags) {
-                const tags = material.tags.split(',').map(tag => tag.trim());
-                tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'reading-tag';
-                    tagElement.textContent = tag;
-                    tagsContainer.appendChild(tagElement);
-                });
-            }
-            
-            // Tampilkan tampilan bacaan
-            document.getElementById('readingView').classList.add('active');
-            
-            // Mencegah scroll pada body
-            document.body.style.overflow = 'hidden';
-        }
-        
-        // Fungsi untuk menyembunyikan tampilan bacaan
-        function hideReadingView() {
-            document.getElementById('readingView').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Fungsi untuk mengunduh materi
-        function downloadMaterial() {
-            if (!currentMaterial) return;
-            
-            // Membuat konten markdown
-            const date = new Date(currentMaterial.meetingDate).toLocaleDateString('id-ID');
-            let markdown = `# ${currentMaterial.courseName} - Pertemuan ${currentMaterial.meetingNumber}\n\n`;
-            markdown += `**Topik:** ${currentMaterial.topic}\n\n`;
-            markdown += `**Tanggal:** ${date}\n\n`;
-            markdown += `**Dosen:** ${currentMaterial.lecturer}\n\n`;
-            markdown += `**Prioritas:** ${getPriorityLabel(currentMaterial.priority)}\n\n`;
-            
-            if (currentMaterial.tags) {
-                markdown += `**Tags:** ${currentMaterial.tags}\n\n`;
-            }
-            
-            markdown += `---\n\n`;
-            // Konversi HTML ke plain text untuk format markdown
-            markdown += `${stripHtmlTags(currentMaterial.summary)}\n\n`;
-            markdown += `---\n\n`;
-            markdown += `*Dibuat pada: ${new Date(currentMaterial.createdAt).toLocaleString('id-ID')}*\n`;
-            markdown += `*Terakhir diupdate: ${new Date(currentMaterial.updatedAt).toLocaleString('id-ID')}*\n`;
-            
-            // Membuat file dan mengunduh
-            const blob = new Blob([markdown], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const filename = generateFilename(currentMaterial.topic) + '.md';
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-        
-        // Fungsi untuk generate filename
-        function generateFilename(topic) {
-            return topic
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '')
-                .replace(/\s+/g, '_')
-                .substring(0, 50);
-        }
-        
-        // Fungsi untuk format tanggal
-        function formatDate(dateStr) {
-            return new Date(dateStr).toLocaleDateString('id-ID', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            });
-        }
-        
-        // Fungsi untuk label prioritas
-        function getPriorityLabel(priority) {
-            const labels = { low: 'Rendah', medium: 'Sedang', high: 'Tinggi' };
-            return labels[priority] || 'Sedang';
-        }
-        
-        // Fungsi untuk escape HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // Fungsi untuk menghapus tag HTML
-        function stripHtmlTags(html) {
-            const temporalDivElement = document.createElement('div');
-            temporalDivElement.innerHTML = html;
-            return temporalDivElement.textContent || temporalDivElement.innerText || '';
-        }
-        
-        // Event listeners untuk tampilan bacaan
-        document.getElementById('closeReadingView').addEventListener('click', hideReadingView);
-        document.getElementById('downloadReadingSummary').addEventListener('click', downloadMaterial);
-        
-        // Cek apakah pengguna mengklik area di luar konten bacaan untuk menutup modal
-        document.getElementById('readingView').addEventListener('click', (e) => {
-            if (e.target.id === 'readingView') {
-                hideReadingView();
-            }
-        });
-        
-        // Muat data saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', loadMaterials);
-    </script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <!-- Main application script -->
+    <script src="app.js"></script>
 </body>
 </html>
